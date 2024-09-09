@@ -1,0 +1,7 @@
+Package: nterm
+Version: 1.0
+Section: base
+Priority: optional
+Architecture: amd64
+Maintainer: Nabin Bhusal <nabinbhusal80@gmail.com>
+Description: Nterm is a simple and efficient note taking application.

@@ -12,15 +12,21 @@ class EventHandler : public QObject
     QML_ELEMENT
     Q_PROPERTY(QString currentFile READ currentFile WRITE setCurrentFile NOTIFY currentFileChanged FINAL)
     Q_PROPERTY(QVariantList allNotes READ allNotes WRITE setAllNotes NOTIFY allNotesChanged FINAL)
+    Q_PROPERTY(QVariantMap textFormat READ textFormat WRITE setTextFormat NOTIFY textFormatChanged FINAL)
 
 private:
-    int selectionStart;
-    int selectionEnd;
-    QQuickTextDocument *textDocument;
+
     Filedb filedb;
-    QTextCursor textCursor();
     QString currentfile;
     QVariantList allnotes;
+
+    QQuickTextDocument *textDocument;
+
+    QTextCursor textCursor();
+    int selectionStart;
+    int selectionEnd;
+
+    QVariantMap textformat;
 
 public:
     explicit EventHandler(QObject *parent = nullptr);
@@ -43,10 +49,12 @@ public:
     Q_INVOKABLE QString currentFile();
     Q_INVOKABLE QString readCurrentFileContent();
     Q_INVOKABLE void deleteNote(int noteIndex);
-
+    Q_INVOKABLE QVariantMap textFormat();
+    Q_INVOKABLE void setTextFormat(QVariantMap format);
 signals:
     void currentFileChanged(bool isNew);
     void allNotesChanged();
+    void textFormatChanged();
 };
 
 #endif

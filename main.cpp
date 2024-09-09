@@ -1,12 +1,14 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include <QIcon>
 #include <EventHandler.h>
+
+// HIGHLIGHT ICON COLOR: #3276C7
 
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
-    // if you're to register a QML component you would do this
-    // qmlRegisterType<EventHandler>("EventHandler", 1, 0, "EventHandler");
+    app.setWindowIcon(QIcon("/assets/logo.png"));
 
     QQmlApplicationEngine engine;
     EventHandler eventHandler;
@@ -22,6 +24,6 @@ int main(int argc, char *argv[])
         { QCoreApplication::exit(-1); },
         Qt::QueuedConnection);
 
-    engine.loadFromModule("qmltest", "Main");
+    engine.loadFromModule("nterm", "Main");
     return app.exec();
 }

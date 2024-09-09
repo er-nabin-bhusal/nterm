@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=NTerm
+Exec=/usr/bin/nterm
+Icon=nterm
+Type=Application
+Categories=Utility;

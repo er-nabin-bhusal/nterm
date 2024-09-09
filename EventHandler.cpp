@@ -10,6 +10,12 @@ EventHandler::EventHandler(QObject *parent) : QObject(parent)
     Filedb filedb;
     QStringList noteFiles = filedb.listAllNotes();
 
+    // initialize the textFormat
+    textformat["heading"] = false;
+    textformat["bold"] = false;
+    textformat["underline"] = true;
+    textformat["italic"] = false;
+
     for (const QString &fileName : noteFiles)
     {
         QVariantMap variant;
@@ -28,32 +34,34 @@ QTextCursor EventHandler::textCursor()
 {
     QTextCursor cursor = QTextCursor(this->textDocument->textDocument());
 
-    if (hasSelection())
-    {
+    if (hasSelection()) {
         cursor.setPosition(selectionStart);
         cursor.setPosition(selectionEnd, QTextCursor::KeepAnchor);
-    }
-    else
-    {
-        cursor.setPosition(selectionStart, QTextCursor::MoveAnchor);
+    } else {
+        cursor.setPosition(selectionEnd);
     }
     return cursor;
 }
 
-void EventHandler::setSelection(int selectionStart, int selectionEnd)
-{
+
+void EventHandler::setSelection(int selectionStart, int selectionEnd) {
     this->selectionStart = selectionStart;
     this->selectionEnd = selectionEnd;
+
+    QTextCursor cursor = textCursor();
+    bool isHeading = (cursor.charFormat().fontWeight() == QFont::Bold && cursor.charFormat().fontPointSize() == 24);
+    bool isBold = cursor.charFormat().fontWeight() == QFont::Bold;
+    bool isItalic = cursor.charFormat().fontItalic();
+    bool isUnderline = cursor.charFormat().fontUnderline();
+
+    textformat["heading"] = isHeading ? true : false;
+    textformat["bold"] = isBold ? true : false;
+    textformat["italic"] = isItalic ? true : false;
+    textformat["underline"] = isUnderline ? true : false;
+    emit textFormatChanged();
 }
 
-bool EventHandler::hasSelection()
-{
-    if (this->selectionStart < this->selectionEnd)
-    {
-        return true;
-    }
-    return false;
-}
+bool EventHandler::hasSelection() { return this->selectionStart != this->selectionEnd; }
 
 void EventHandler::setNormalText()
 {
@@ -62,16 +70,23 @@ void EventHandler::setNormalText()
     format.setFontWeight(QFont::Normal);
     format.setFontPointSize(14);
     cursor.mergeCharFormat(format);
+    if (!hasSelection()) {
+        cursor.insertText(QString(QString(QChar(0x200B))));
+    }
 }
 
-void EventHandler::setBlockToNormal()
-{
+void EventHandler::setBlockToNormal() {
     QTextCursor cursor = textCursor();
     QTextCharFormat format;
     cursor.select(QTextCursor::BlockUnderCursor);
     format.setFontWeight(QFont::Normal);
     format.setFontPointSize(14);
     cursor.mergeCharFormat(format);
+
+    if (!hasSelection()) {
+        cursor.insertText(QString(QChar(0x200B)));
+    }
+
 }
 
 void EventHandler::handleHeadingClick()
@@ -80,8 +95,7 @@ void EventHandler::handleHeadingClick()
     cursor.select(QTextCursor::BlockUnderCursor);
     bool isHeading = (cursor.charFormat().fontWeight() == QFont::Bold && cursor.charFormat().fontPointSize() == 24);
 
-    if (isHeading)
-    {
+    if (isHeading) {
         setBlockToNormal();
     }
     else
@@ -97,15 +111,16 @@ void EventHandler::handleBoldClick()
 {
     QTextCursor cursor = textCursor();
     bool isBold = cursor.charFormat().fontWeight() == QFont::Bold;
-    if (isBold)
-    {
+
+    if (isBold) {
         setNormalText();
-    }
-    else
-    {
+    } else {
         QTextCharFormat format;
         format.setFontWeight(QFont::Bold);
         cursor.mergeCharFormat(format);
+        if (!hasSelection()) {
+            cursor.insertText(QString(QChar(0x200B)));
+        }
     }
 }
 
@@ -206,3 +221,7 @@ void EventHandler::deleteNote(int noteIndex)
     allnotes.removeAt(noteIndex);
     emit allNotesChanged();
 }
+
+
+QVariantMap EventHandler::textFormat() {return textformat; }
+void EventHandler::setTextFormat(QVariantMap format) {}

@@ -12,7 +12,7 @@ SplitView {
         id: leftNavcon
         SplitView.preferredWidth: 250
         SplitView.minimumWidth: 150
-        color: "#EBEBEB"
+        color: "#F7F7F7"
 
         LeftContainer {}
     }
@@ -31,21 +31,21 @@ SplitView {
                 Layout.alignment: Qt.AlignLeft
 
                 EditorBtn {
-                    iconSource: "assets/heading.svg"
+                    iconSource: eventHandler.textFormat.heading ? "assets/headingActive.svg" : "assets/heading.svg"
                     onClicked: () => {
                         eventHandler.handleHeadingClick();
                     }
                 }
 
                 EditorBtn {
-                    iconSource: "assets/bold.svg"
+                    iconSource: eventHandler.textFormat.bold ? "assets/boldActive.svg" : "assets/bold.svg"
                     onClicked: () => {
                         eventHandler.handleBoldClick();
                     }
                 }
 
                 EditorBtn {
-                    iconSource: "assets/italics.svg"
+                    iconSource: eventHandler.textFormat.italic ? "assets/italicActive.svg" : "assets/italic.svg"
                     onClicked: () => {
                         eventHandler.handleItalicClick();
                     }
@@ -88,7 +88,7 @@ SplitView {
                 id: textarea
                 selectionColor: "#cce5ff"
                 selectedTextColor: "#000"
-                textFormat: TextEdit.RichText
+                textFormat: TextEdit.AutoText
                 wrapMode: Text.Wrap
                 readOnly: !eventHandler.currentFile
                 font.pointSize: 14
@@ -116,6 +116,9 @@ SplitView {
                             case Qt.Key_U:
                                 eventHandler.handleUnderlineClick();
                                 break;
+                            case Qt.Key_H:
+                                eventHandler.handleHeadingClick();
+                                break;
                             default:
                                 break;
                         }
@@ -124,7 +127,11 @@ SplitView {
                     }
                 }
 
-                onCursorPositionChanged: {
+                onSelectionEndChanged: {
+                    eventHandler.setSelection(textarea.selectionStart, textarea.selectionEnd);
+                }
+
+                onSelectionStartChanged: {
                     eventHandler.setSelection(textarea.selectionStart, textarea.selectionEnd);
                 }
 
