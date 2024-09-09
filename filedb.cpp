@@ -10,8 +10,8 @@ Filedb::Filedb()
 
 QString Filedb::getOrCreateNotesDir()
 {
-    QString baseDirPath = QCoreApplication::applicationDirPath();
-    QString notesDirPath = QDir(baseDirPath).filePath("notes");
+    QString homeDirPath = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
+    QString notesDirPath = QDir(homeDirPath).filePath("nterm/notes");
 
     QDir notesDir(notesDirPath);
     if (!notesDir.exists())
