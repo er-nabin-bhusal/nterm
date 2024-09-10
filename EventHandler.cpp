@@ -13,9 +13,10 @@ EventHandler::EventHandler(QObject *parent) : QObject(parent)
     // initialize the textFormat
     textformat["heading"] = false;
     textformat["bold"] = false;
-    textformat["underline"] = true;
+    textformat["underline"] = false;
     textformat["italic"] = false;
 
+    // list all the available notes here
     for (const QString &fileName : noteFiles)
     {
         QVariantMap variant;
@@ -25,8 +26,7 @@ EventHandler::EventHandler(QObject *parent) : QObject(parent)
     }
 }
 
-void EventHandler::setTextDocument(QQuickTextDocument *textDocument)
-{
+void EventHandler::setTextDocument(QQuickTextDocument *textDocument) {
     this->textDocument = textDocument;
 }
 
@@ -43,11 +43,7 @@ QTextCursor EventHandler::textCursor()
     return cursor;
 }
 
-
-void EventHandler::setSelection(int selectionStart, int selectionEnd) {
-    this->selectionStart = selectionStart;
-    this->selectionEnd = selectionEnd;
-
+void EventHandler::updateFormat() {
     QTextCursor cursor = textCursor();
     bool isHeading = (cursor.charFormat().fontWeight() == QFont::Bold && cursor.charFormat().fontPointSize() == 24);
     bool isBold = cursor.charFormat().fontWeight() == QFont::Bold;
@@ -61,6 +57,12 @@ void EventHandler::setSelection(int selectionStart, int selectionEnd) {
     emit textFormatChanged();
 }
 
+void EventHandler::setSelection(int selectionStart, int selectionEnd) {
+    this->selectionStart = selectionStart;
+    this->selectionEnd = selectionEnd;
+    this->updateFormat();
+}
+
 bool EventHandler::hasSelection() { return this->selectionStart != this->selectionEnd; }
 
 void EventHandler::setNormalText()
@@ -70,6 +72,7 @@ void EventHandler::setNormalText()
     format.setFontWeight(QFont::Normal);
     format.setFontPointSize(14);
     cursor.mergeCharFormat(format);
+
     if (!hasSelection()) {
         cursor.insertText(QString(QString(QChar(0x200B))));
     }
@@ -77,33 +80,36 @@ void EventHandler::setNormalText()
 
 void EventHandler::setBlockToNormal() {
     QTextCursor cursor = textCursor();
-    QTextCharFormat format;
     cursor.select(QTextCursor::BlockUnderCursor);
+    QTextCharFormat format;
     format.setFontWeight(QFont::Normal);
     format.setFontPointSize(14);
     cursor.mergeCharFormat(format);
 
     if (!hasSelection()) {
+        cursor.setPosition(this->selectionEnd);
         cursor.insertText(QString(QChar(0x200B)));
     }
 
 }
 
-void EventHandler::handleHeadingClick()
-{
+void EventHandler::handleHeadingClick() {
     QTextCursor cursor = textCursor();
     cursor.select(QTextCursor::BlockUnderCursor);
-    bool isHeading = (cursor.charFormat().fontWeight() == QFont::Bold && cursor.charFormat().fontPointSize() == 24);
+    bool isHeading = (cursor.charFormat().fontPointSize() == 24);
 
     if (isHeading) {
         setBlockToNormal();
-    }
-    else
-    {
+    } else {
         QTextCharFormat format;
         format.setFontWeight(QFont::Bold);
         format.setFontPointSize(24);
         cursor.mergeCharFormat(format);
+
+        if (!hasSelection()) {
+            cursor.setPosition(this->selectionEnd);
+            cursor.insertText(QString(QChar(0x200B)));
+        }
     }
 }
 
@@ -131,6 +137,9 @@ void EventHandler::handleItalicClick()
     QTextCharFormat format;
     format.setFontItalic(!isItalic);
     cursor.mergeCharFormat(format);
+    if (!hasSelection()) {
+        cursor.insertText(QString(QChar(0x200B)));
+    }
 }
 
 void EventHandler::handleUnderlineClick()
@@ -140,6 +149,9 @@ void EventHandler::handleUnderlineClick()
     QTextCharFormat format;
     format.setFontUnderline(!isUnderline);
     cursor.mergeCharFormat(format);
+    if (!hasSelection()) {
+        cursor.insertText(QString(QChar(0x200B)));
+    }
 }
 
 void EventHandler::sayHello()
@@ -222,6 +234,21 @@ void EventHandler::deleteNote(int noteIndex)
     emit allNotesChanged();
 }
 
-
 QVariantMap EventHandler::textFormat() {return textformat; }
 void EventHandler::setTextFormat(QVariantMap format) {}
+
+/**
+ * This function is to change the block is the current format is heading.
+**/
+bool EventHandler::enterPressed() {
+    QTextCursor cursor = this->textCursor();
+    bool isHeading = (cursor.charFormat().fontPointSize() == 24);
+    if (!isHeading || hasSelection()) { return false; }
+
+    cursor.insertBlock();
+    this->setBlockToNormal();
+    return true;
+};
+
+
+

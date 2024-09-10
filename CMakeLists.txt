@@ -38,8 +38,9 @@ qt_add_qml_module(appnterm
 
         assets/headingActive.svg
         assets/logo.png
-        assets/boldActive.svg
+
         assets/italic.svg assets/italicActive.svg
+        RESOURCES assets/underlineActive.svg assets/boldActive.svg
 
 )
 

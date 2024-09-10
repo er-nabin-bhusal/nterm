@@ -52,7 +52,7 @@ SplitView {
                 }
 
                 EditorBtn {
-                    iconSource: "assets/underline.svg"
+                    iconSource: eventHandler.textFormat.underline ? "assets/underlineActive.svg" : "assets/underline.svg"
                     onClicked: () => {
                         eventHandler.handleUnderlineClick();
                     }
@@ -122,9 +122,12 @@ SplitView {
                             default:
                                 break;
                         }
-                    } else {
-                        debounceTimer.restart();
                     }
+                    if (event.key == Qt.Key_Enter || event.key == Qt.Key_Return) {
+                        const response = eventHandler.enterPressed();
+                        if (response) { event.accepted = true; }
+                    }
+                    debounceTimer.restart();
                 }
 
                 onSelectionEndChanged: {

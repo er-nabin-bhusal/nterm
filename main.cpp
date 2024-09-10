@@ -5,8 +5,7 @@
 
 // HIGHLIGHT ICON COLOR: #3276C7
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     QGuiApplication app(argc, argv);
     app.setWindowIcon(QIcon("/assets/logo.png"));
 

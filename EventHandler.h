@@ -22,11 +22,12 @@ private:
 
     QQuickTextDocument *textDocument;
 
-    QTextCursor textCursor();
     int selectionStart;
     int selectionEnd;
-
     QVariantMap textformat;
+
+    QTextCursor textCursor();
+    void updateFormat();
 
 public:
     explicit EventHandler(QObject *parent = nullptr);
@@ -51,6 +52,7 @@ public:
     Q_INVOKABLE void deleteNote(int noteIndex);
     Q_INVOKABLE QVariantMap textFormat();
     Q_INVOKABLE void setTextFormat(QVariantMap format);
+    Q_INVOKABLE bool enterPressed();
 signals:
     void currentFileChanged(bool isNew);
     void allNotesChanged();
