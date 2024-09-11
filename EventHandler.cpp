@@ -243,12 +243,53 @@ void EventHandler::setTextFormat(QVariantMap format) {}
 bool EventHandler::enterPressed() {
     QTextCursor cursor = this->textCursor();
     bool isHeading = (cursor.charFormat().fontPointSize() == 24);
-    if (!isHeading || hasSelection()) { return false; }
+    if (!isHeading || hasSelection()) {
+        detectLink();
+        return false;
+    }
 
     cursor.insertBlock();
     this->setBlockToNormal();
     return true;
 };
+
+
+void EventHandler::detectLink() {
+    QString text = textDocument->textDocument()->toPlainText();
+    int i;
+    for(i=this->selectionEnd-1;i>0;i--){
+        if (text[i] == " " || text[i] == "\n") {
+            break;
+        }
+    }
+    QString word = text.mid(i, selectionEnd-i).trimmed();
+    QUrl url(word);
+
+    if (url.isValid() && !url.scheme().isEmpty()) {
+        QTextCharFormat format;
+        format.setAnchor(true);
+        format.setForeground(Qt::blue);
+        format.setAnchorHref(word);
+
+        QTextCursor cursor = textCursor();
+        QTextCharFormat previousFormat = cursor.charFormat();
+        cursor.setPosition(i+1);
+        cursor.setPosition(selectionEnd, QTextCursor::KeepAnchor);
+        cursor.mergeCharFormat(format);
+        cursor.clearSelection();
+        cursor.setCharFormat(previousFormat);
+        cursor.insertText(QChar(0x200B));
+    }
+}
+
+
+
+
+
+
+
+
+
 
 
 

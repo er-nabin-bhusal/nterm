@@ -53,6 +53,7 @@ public:
     Q_INVOKABLE QVariantMap textFormat();
     Q_INVOKABLE void setTextFormat(QVariantMap format);
     Q_INVOKABLE bool enterPressed();
+    Q_INVOKABLE void detectLink();
 signals:
     void currentFileChanged(bool isNew);
     void allNotesChanged();

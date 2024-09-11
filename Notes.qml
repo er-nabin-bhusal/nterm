@@ -127,6 +127,10 @@ SplitView {
                         const response = eventHandler.enterPressed();
                         if (response) { event.accepted = true; }
                     }
+                    if (event.key == Qt.Key_Space) {
+                        eventHandler.detectLink();
+                    }
+
                     debounceTimer.restart();
                 }
 
@@ -145,6 +149,10 @@ SplitView {
                             textarea.text = eventHandler.readCurrentFileContent();
                         }
                     });
+                }
+
+                onLinkActivated: (exLink) => {
+                    Qt.openUrlExternally(exLink);
                 }
             }
         }
