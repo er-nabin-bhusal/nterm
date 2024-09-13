@@ -31,6 +31,13 @@ SplitView {
                 Layout.alignment: Qt.AlignLeft
 
                 EditorBtn {
+                    iconSource: eventHandler.textFormat.paragraph ? "assets/paragraphActive.svg": "assets/paragraph.svg"
+                    onClicked: () => {
+                        eventHandler.handleParagraphClick();
+                    }
+                }
+
+                EditorBtn {
                     iconSource: eventHandler.textFormat.heading ? "assets/headingActive.svg" : "assets/heading.svg"
                     onClicked: () => {
                         eventHandler.handleHeadingClick();
@@ -93,6 +100,7 @@ SplitView {
                 readOnly: !eventHandler.currentFile
                 font.pointSize: 14
                 focus: true
+                font.family: "Inter"
 
                 Timer {
                     id: debounceTimer

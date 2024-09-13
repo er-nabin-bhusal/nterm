@@ -24,6 +24,7 @@ void Filedb::writeContentToFile(QString fileName, QString content) {
 
     if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         QTextStream out(&file);
+        content.replace("\u200B", "");
         out << content;
         file.close();
     }

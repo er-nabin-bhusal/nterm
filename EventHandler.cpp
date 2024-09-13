@@ -15,6 +15,7 @@ EventHandler::EventHandler(QObject *parent) : QObject(parent)
     textformat["bold"] = false;
     textformat["underline"] = false;
     textformat["italic"] = false;
+    textformat["paragraph"] = true;
 
     // list all the available notes here
     for (const QString &fileName : noteFiles)
@@ -54,6 +55,7 @@ void EventHandler::updateFormat() {
     textformat["bold"] = isBold ? true : false;
     textformat["italic"] = isItalic ? true : false;
     textformat["underline"] = isUnderline ? true : false;
+    textformat["paragraph"] = !isHeading & !isBold & !isItalic & !isUnderline;
     emit textFormatChanged();
 }
 
@@ -65,12 +67,33 @@ void EventHandler::setSelection(int selectionStart, int selectionEnd) {
 
 bool EventHandler::hasSelection() { return this->selectionStart != this->selectionEnd; }
 
+bool EventHandler::isBold(QTextCursor cursor) {
+    QTextCharFormat format = cursor.charFormat();
+    return format.fontWeight() == QFont::Bold && format.fontPointSize() == 14;
+}
+
+bool EventHandler::isHeading(QTextCursor cursor) {
+    QTextCharFormat format = cursor.charFormat();
+    return format.fontWeight() == QFont::Bold && format.fontPointSize() == 24;
+}
+
+bool EventHandler::isItalic(QTextCursor cursor) {
+    QTextCharFormat format = cursor.charFormat();
+    return format.fontItalic();
+}
+
+bool EventHandler::isUnderline(QTextCursor cursor) {
+    QTextCharFormat format = cursor.charFormat();
+    return format.fontUnderline();
+}
+
 void EventHandler::setNormalText()
 {
     QTextCursor cursor = textCursor();
     QTextCharFormat format;
     format.setFontWeight(QFont::Normal);
     format.setFontPointSize(14);
+    format.setFontFamilies(QStringList("Inter"));
     cursor.mergeCharFormat(format);
 
     if (!hasSelection()) {
@@ -84,6 +107,7 @@ void EventHandler::setBlockToNormal() {
     QTextCharFormat format;
     format.setFontWeight(QFont::Normal);
     format.setFontPointSize(14);
+    format.setFontFamilies(QStringList("Inter"));
     cursor.mergeCharFormat(format);
 
     if (!hasSelection()) {
@@ -104,6 +128,7 @@ void EventHandler::handleHeadingClick() {
         QTextCharFormat format;
         format.setFontWeight(QFont::Bold);
         format.setFontPointSize(24);
+        format.setFontFamilies(QStringList("Inter 24pt"));
         cursor.mergeCharFormat(format);
 
         if (!hasSelection()) {
@@ -113,12 +138,32 @@ void EventHandler::handleHeadingClick() {
     }
 }
 
+void EventHandler::handleParagraphClick() {
+    QTextCursor cursor = textCursor();
+    QTextCharFormat format;
+    format.setFontItalic(false);
+    format.setFontUnderline(false);
+    format.setForeground(Qt::black);
+    format.setAnchor(false);
+    format.setAnchorHref(NULL);
+
+    if (this->isHeading(cursor)) {
+        cursor.select(QTextCursor::BlockUnderCursor);
+        cursor.mergeCharFormat(format);
+        this->setBlockToNormal();
+    } else {
+        cursor.mergeCharFormat(format);
+        this->setNormalText();
+    }
+
+    qDebug() << textDocument->textDocument()->toHtml();
+}
+
 void EventHandler::handleBoldClick()
 {
     QTextCursor cursor = textCursor();
-    bool isBold = cursor.charFormat().fontWeight() == QFont::Bold;
 
-    if (isBold) {
+    if (isBold(cursor)) {
         setNormalText();
     } else {
         QTextCharFormat format;
@@ -133,9 +178,8 @@ void EventHandler::handleBoldClick()
 void EventHandler::handleItalicClick()
 {
     QTextCursor cursor = textCursor();
-    bool isItalic = cursor.charFormat().fontItalic();
     QTextCharFormat format;
-    format.setFontItalic(!isItalic);
+    format.setFontItalic(!this->isItalic(cursor));
     cursor.mergeCharFormat(format);
     if (!hasSelection()) {
         cursor.insertText(QString(QChar(0x200B)));
@@ -145,18 +189,12 @@ void EventHandler::handleItalicClick()
 void EventHandler::handleUnderlineClick()
 {
     QTextCursor cursor = textCursor();
-    bool isUnderline = cursor.charFormat().fontUnderline();
     QTextCharFormat format;
-    format.setFontUnderline(!isUnderline);
+    format.setFontUnderline(!this->isUnderline(cursor));
     cursor.mergeCharFormat(format);
     if (!hasSelection()) {
         cursor.insertText(QString(QChar(0x200B)));
     }
-}
-
-void EventHandler::sayHello()
-{
-    qDebug() << "Say Hello";
 }
 
 QVariantList EventHandler::allNotes()
@@ -268,17 +306,20 @@ void EventHandler::detectLink() {
     if (url.isValid() && !url.scheme().isEmpty()) {
         QTextCharFormat format;
         format.setAnchor(true);
-        format.setForeground(Qt::blue);
+        format.setForeground(QBrush(QColor(6, 95, 212)));
         format.setAnchorHref(word);
 
         QTextCursor cursor = textCursor();
         QTextCharFormat previousFormat = cursor.charFormat();
-        cursor.setPosition(i+1);
-        cursor.setPosition(selectionEnd, QTextCursor::KeepAnchor);
-        cursor.mergeCharFormat(format);
-        cursor.clearSelection();
-        cursor.setCharFormat(previousFormat);
-        cursor.insertText(QChar(0x200B));
+
+        if (!previousFormat.isAnchor()) {
+            cursor.setPosition(i+1);
+            cursor.setPosition(selectionEnd, QTextCursor::KeepAnchor);
+            cursor.mergeCharFormat(format);
+            cursor.clearSelection();
+            cursor.setCharFormat(previousFormat);
+            cursor.insertText(QChar(0x200B));
+        }
     }
 }
 

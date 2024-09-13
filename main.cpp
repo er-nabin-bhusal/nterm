@@ -1,5 +1,6 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include <QFontDatabase>
 #include <QIcon>
 #include <EventHandler.h>
 
@@ -7,7 +8,10 @@
 
 int main(int argc, char *argv[]) {
     QGuiApplication app(argc, argv);
-    app.setWindowIcon(QIcon("/assets/logo.png"));
+    app.setWindowIcon(QIcon("nterm/assets/logo.png"));
+
+    QFontDatabase::addApplicationFont("nterm/assets/fonts/inter/InterRegular.ttf");
+    QFontDatabase::addApplicationFont("nterm/assets/fonts/inter/InterBlack.ttf");
 
     QQmlApplicationEngine engine;
     EventHandler eventHandler;

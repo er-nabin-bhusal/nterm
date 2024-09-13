@@ -37,11 +37,16 @@ public:
     void setNormalText();
     void setBlockToNormal();
 
+    bool isBold(QTextCursor cursor);
+    bool isHeading(QTextCursor cursor);
+    bool isItalic(QTextCursor cursor);
+    bool isUnderline(QTextCursor cursor);
+
     Q_INVOKABLE void handleBoldClick();
     Q_INVOKABLE void handleHeadingClick();
     Q_INVOKABLE void handleItalicClick();
     Q_INVOKABLE void handleUnderlineClick();
-    Q_INVOKABLE void sayHello();
+    Q_INVOKABLE void handleParagraphClick();
     Q_INVOKABLE QVariantList allNotes();
     Q_INVOKABLE void setAllNotes(const QVariantList &allNotes);
     Q_INVOKABLE void createNewNote();

@@ -40,8 +40,10 @@ qt_add_qml_module(appnterm
         assets/logo.png
 
         assets/italic.svg assets/italicActive.svg
-        RESOURCES assets/underlineActive.svg assets/boldActive.svg
-
+        assets/underlineActive.svg assets/boldActive.svg
+        assets/paragraph.svg assets/paragraphActive.svg
+        assets/fonts/inter/InterRegular.ttf
+        assets/fonts/inter/InterBlack.ttf
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
