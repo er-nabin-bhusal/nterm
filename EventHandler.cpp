@@ -128,7 +128,7 @@ void EventHandler::handleHeadingClick() {
         QTextCharFormat format;
         format.setFontWeight(QFont::Bold);
         format.setFontPointSize(24);
-        format.setFontFamilies(QStringList("Inter 24pt"));
+        format.setFontFamilies(QStringList("Inter 24pt Black"));
         cursor.mergeCharFormat(format);
 
         if (!hasSelection()) {

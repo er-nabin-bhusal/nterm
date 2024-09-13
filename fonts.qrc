@@ -1,1 +1,6 @@
-<RCC/>
+<RCC>
+    <qresource prefix="/">
+        <file>assets/fonts/inter/InterRegular.ttf</file>
+        <file>assets/fonts/inter/Inter24ptBlack.ttf</file>
+    </qresource>
+</RCC>

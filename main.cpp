@@ -10,8 +10,13 @@ int main(int argc, char *argv[]) {
     QGuiApplication app(argc, argv);
     app.setWindowIcon(QIcon("nterm/assets/logo.png"));
 
-    QFontDatabase::addApplicationFont("nterm/assets/fonts/inter/InterRegular.ttf");
-    QFontDatabase::addApplicationFont("nterm/assets/fonts/inter/InterBlack.ttf");
+    QFontDatabase::addApplicationFont(":/assets/fonts/inter/InterRegular.ttf");
+
+    int id = QFontDatabase::addApplicationFont(":/assets/fonts/inter/Inter24ptBlack.ttf");
+    qDebug() << "value of ID: " << id;
+
+    QGuiApplication::setFont(QFont("Inter"));
+
 
     QQmlApplicationEngine engine;
     EventHandler eventHandler;

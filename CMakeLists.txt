@@ -2,9 +2,11 @@ cmake_minimum_required(VERSION 3.16)
 
 project(nterm VERSION 0.1 LANGUAGES CXX)
 
+set(CMAKE_AUTORCC ON)
+
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# set(Qt6_DIR "/home/nihshreyas/Qt/6.5.3/gcc_64/lib/cmake/Qt6")
+# set(Qt6_DIR "/home/nihshreyas/Qt/6.5.3/gcc_64/lib/cmake/Qt6") -> to make it work in VSCode
 
 find_package(Qt6 6.5 REQUIRED COMPONENTS Quick Widgets)
 
@@ -13,6 +15,7 @@ qt_standard_project_setup(REQUIRES 6.5)
 qt_add_executable(appnterm
     main.cpp
 )
+
 
 qt_add_qml_module(appnterm
     URI nterm
@@ -42,8 +45,7 @@ qt_add_qml_module(appnterm
         assets/italic.svg assets/italicActive.svg
         assets/underlineActive.svg assets/boldActive.svg
         assets/paragraph.svg assets/paragraphActive.svg
-        assets/fonts/inter/InterRegular.ttf
-        assets/fonts/inter/InterBlack.ttf
+        fonts.qrc
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

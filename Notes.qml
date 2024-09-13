@@ -100,7 +100,7 @@ SplitView {
                 readOnly: !eventHandler.currentFile
                 font.pointSize: 14
                 focus: true
-                font.family: "Inter"
+                // font.family: "Inter"
 
                 Timer {
                     id: debounceTimer
