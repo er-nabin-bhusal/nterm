@@ -9,7 +9,7 @@ Window {
     visible: true
     title: qsTr("NTerm")
 
-    Notes {
+    NoteView {
         Keys.onPressed: (event) => {
             if (event.modifiers & Qt.ControlModifier) {
                 switch (event.key) {

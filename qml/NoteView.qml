@@ -10,8 +10,8 @@ SplitView {
 
     Rectangle {
         id: leftNavcon
-        SplitView.preferredWidth: 250
-        SplitView.minimumWidth: 150
+        SplitView.preferredWidth: 350
+        SplitView.minimumWidth: 250
         color: "#F7F7F7"
 
         LeftContainer {}
@@ -31,35 +31,35 @@ SplitView {
                 Layout.alignment: Qt.AlignLeft
 
                 EditorBtn {
-                    iconSource: eventHandler.textFormat.paragraph ? "assets/paragraphActive.svg": "assets/paragraph.svg"
+                    iconSource: eventHandler.textFormat.paragraph ? "qrc:/assets/icons/paragraphActive.svg": "qrc:/assets/icons/paragraph.svg"
                     onClicked: () => {
                         eventHandler.handleParagraphClick();
                     }
                 }
 
                 EditorBtn {
-                    iconSource: eventHandler.textFormat.heading ? "assets/headingActive.svg" : "assets/heading.svg"
+                    iconSource: eventHandler.textFormat.heading ? "qrc:/assets/icons/headingActive.svg" : "qrc:/assets/icons/heading.svg"
                     onClicked: () => {
                         eventHandler.handleHeadingClick();
                     }
                 }
 
                 EditorBtn {
-                    iconSource: eventHandler.textFormat.bold ? "assets/boldActive.svg" : "assets/bold.svg"
+                    iconSource: eventHandler.textFormat.bold ? "qrc:/assets/icons/boldActive.svg" : "qrc:/assets/icons/bold.svg"
                     onClicked: () => {
                         eventHandler.handleBoldClick();
                     }
                 }
 
                 EditorBtn {
-                    iconSource: eventHandler.textFormat.italic ? "assets/italicActive.svg" : "assets/italic.svg"
+                    iconSource: eventHandler.textFormat.italic ? "qrc:/assets/icons/italicActive.svg" : "qrc:/assets/icons/italic.svg"
                     onClicked: () => {
                         eventHandler.handleItalicClick();
                     }
                 }
 
                 EditorBtn {
-                    iconSource: eventHandler.textFormat.underline ? "assets/underlineActive.svg" : "assets/underline.svg"
+                    iconSource: eventHandler.textFormat.underline ? "qrc:/assets/icons/underlineActive.svg" : "qrc:/assets/icons/underline.svg"
                     onClicked: () => {
                         eventHandler.handleUnderlineClick();
                     }

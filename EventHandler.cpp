@@ -260,8 +260,8 @@ QString EventHandler::readCurrentFileContent()
     return content;
 }
 
-void EventHandler::deleteNote(int noteIndex)
-{
+void EventHandler::deleteNote(int noteIndex) {
+    if (currentfile.isEmpty()) return;
     QVariant note = allnotes.at(noteIndex);
     QVariantMap map = note.toMap();
     QString fileName = map.value("fileName").toString();

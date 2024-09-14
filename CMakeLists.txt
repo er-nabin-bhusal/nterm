@@ -21,31 +21,23 @@ qt_add_qml_module(appnterm
     URI nterm
     VERSION 1.0
     QML_FILES
-        Main.qml
-        Notes.qml
-        EditorBtn.qml
-        LeftContainer.qml
+        qml/Main.qml
+        qml/NoteView.qml
+        qml/EditorBtn.qml
+        qml/LeftContainer.qml
+        qml/FolderList.qml
+        qml/NoteList.qml
+
     SOURCES
         EventHandler.h
         EventHandler.cpp
         filedb.h
         filedb.cpp
-    RESOURCES
 
     RESOURCES
-        assets/delete.svg
-        assets/create.svg
-        assets/heading.svg
-        assets/bold.svg
-        assets/underline.svg
-
-        assets/headingActive.svg
         assets/logo.png
-
-        assets/italic.svg assets/italicActive.svg
-        assets/underlineActive.svg assets/boldActive.svg
-        assets/paragraph.svg assets/paragraphActive.svg
         fonts.qrc
+        icons.qrc
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

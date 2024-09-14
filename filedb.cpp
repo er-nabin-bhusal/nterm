@@ -33,7 +33,7 @@ void Filedb::writeContentToFile(QString fileName, QString content) {
 QStringList Filedb::listAllNotes() {
     QString notesDirPath = getOrCreateNotesDir();
     QDir notesDir(notesDirPath);
-    QStringList noteFiles = notesDir.entryList(QStringList() << "*.txt", QDir::Files, QDir::Time);
+    QStringList noteFiles = notesDir.entryList(QStringList() << "*.html", QDir::Files, QDir::Time);
     return noteFiles;
 }
 
@@ -56,10 +56,22 @@ QString Filedb::getFileTitle(QString fileName) {
     QString content = readFile(fileName);
     QTextDocument document;
     document.setHtml(content);
-    content = document.toPlainText().replace("\n", " ");
+    content = document.toPlainText();
+
+    QStringList lines = content.split("\n");
+
+    for(const QString &line: lines) {
+        QString stripped = line.trimmed();
+        if (!stripped.isEmpty()) {
+            content = stripped;
+            break;
+        }
+    }
+
     if (content.length() > MAX_TITLE_LEN) {
         return content.left(MAX_TITLE_LEN).append("...");
     }
+
     return content;
 }
 
@@ -67,7 +79,7 @@ QString Filedb::createNewNote() {
     QDateTime currDate = QDateTime::currentDateTime();
     qint64 timestamp = currDate.toMSecsSinceEpoch();
     QString filename = QString::number(timestamp);
-    filename.append(".txt");
+    filename.append(".html");
 
     writeContentToFile(filename, "");
     return filename;

@@ -1,7 +1,5 @@
 import QtQuick
-import QtQuick.Controls
 import QtQuick.Layouts
-
 
 ColumnLayout {
     anchors.fill: parent
@@ -14,23 +12,24 @@ ColumnLayout {
         Layout.preferredWidth: parent.width
 
         EditorBtn {
-            anchors.right: parent.right
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.rightMargin: 10
-            iconSource: "assets/create.svg"
-
-            onClicked: {
-                eventHandler.createNewNote();
-            }
-        }
-        EditorBtn {
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
             anchors.leftMargin: 10
-            iconSource: "assets/delete.svg"
+            iconSource: eventHandler.currentFile ? "qrc:/assets/icons/deleteActive.svg" : "qrc:/assets/icons/delete.svg"
 
             onClicked: {
                 eventHandler.deleteNote(noteListView.currentIndex);
+            }
+        }
+
+        EditorBtn {
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.rightMargin: 10
+            iconSource: "qrc:/assets/icons/create.svg"
+
+            onClicked: {
+                eventHandler.createNewNote();
             }
         }
     }
@@ -92,4 +91,3 @@ ColumnLayout {
         }
     }
 }
-
