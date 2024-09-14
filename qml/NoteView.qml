@@ -12,7 +12,6 @@ SplitView {
         id: leftNavcon
         SplitView.preferredWidth: 350
         SplitView.minimumWidth: 250
-        color: "#F7F7F7"
 
         LeftContainer {}
     }
@@ -100,7 +99,6 @@ SplitView {
                 readOnly: !eventHandler.currentFile
                 font.pointSize: 14
                 focus: true
-                // font.family: "Inter"
 
                 Timer {
                     id: debounceTimer

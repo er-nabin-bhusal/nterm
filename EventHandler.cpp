@@ -8,7 +8,22 @@
 EventHandler::EventHandler(QObject *parent) : QObject(parent)
 {
     Filedb filedb;
-    QStringList noteFiles = filedb.listAllNotes();
+    allfolders.append(filedb.listFolders());
+
+    if (allfolders.empty()) {
+        filedb.createFolder("notes");
+        allfolders.append("notes");
+    }
+
+    // list all the available notes here
+    currentfolder = allfolders.first();
+    QStringList noteFiles = filedb.listNotes(currentfolder);
+    for (const QString &fileName : noteFiles) {
+        QVariantMap variant;
+        variant["title"] = filedb.getFileTitle(currentfolder, fileName);
+        variant["fileName"] = fileName;
+        allnotes.append(variant);
+    }
 
     // initialize the textFormat
     textformat["heading"] = false;
@@ -16,15 +31,6 @@ EventHandler::EventHandler(QObject *parent) : QObject(parent)
     textformat["underline"] = false;
     textformat["italic"] = false;
     textformat["paragraph"] = true;
-
-    // list all the available notes here
-    for (const QString &fileName : noteFiles)
-    {
-        QVariantMap variant;
-        variant["title"] = filedb.getFileTitle(fileName);
-        variant["fileName"] = fileName;
-        allnotes.append(variant);
-    }
 }
 
 void EventHandler::setTextDocument(QQuickTextDocument *textDocument) {
@@ -197,16 +203,13 @@ void EventHandler::handleUnderlineClick()
     }
 }
 
-QVariantList EventHandler::allNotes()
-{
-    return allnotes;
-}
-
+QVariantList EventHandler::allNotes() { return allnotes; }
+QStringList EventHandler::allFolders() { return allfolders; }
 void EventHandler::setAllNotes(const QVariantList &allNotes) {}
+void EventHandler::setAllFolders(const QStringList &allFolders) {}
 
-void EventHandler::createNewNote()
-{
-    QString filename = filedb.createNewNote();
+void EventHandler::createNewNote() {
+    QString filename = filedb.createNewNote(currentfolder);
     setCurrentFile(filename);
 
     QVariantMap variant;
@@ -224,14 +227,14 @@ void EventHandler::createNewNote()
 
 void EventHandler::saveContentToFile()
 {
-    if (currentfile.isNull()){return;}
+    if (currentfile.isNull() || currentfolder.isNull()){return;}
 
-    filedb.writeContentToFile(currentfile, textDocument->textDocument()->toHtml());
+    filedb.writeContentToFile(currentfolder, currentfile, textDocument->textDocument()->toHtml());
 
     for (int i=0;i<allnotes.length(); i++) {
         QVariantMap map = allnotes[i].toMap();
         if (currentfile == map.value("fileName").toString()) {
-            map["title"] = filedb.getFileTitle(currentfile);
+            map["title"] = filedb.getFileTitle(currentfolder, currentfile);
             allnotes.removeAt(i);
             allnotes.insert(0, map);
             break;
@@ -240,23 +243,25 @@ void EventHandler::saveContentToFile()
     emit allNotesChanged();
 }
 
-void EventHandler::setCurrentFile(QString filename)
-{
-    if (currentfile != filename)
-    {
-        currentfile = filename;
+void EventHandler::setCurrentFile(QString file) {
+    if (currentfile != file) {
+        currentfile = file;
         emit currentFileChanged(false);
     }
 }
 
-QString EventHandler::currentFile()
-{
-    return currentfile;
+void EventHandler::setCurrentFolder(QString folder) {
+    if (currentfolder != folder) {
+        currentfolder = folder;
+        emit currentFolderChanged();
+    }
 }
 
-QString EventHandler::readCurrentFileContent()
-{
-    QString content = filedb.readFile(this->currentfile);
+QString EventHandler::currentFile() { return currentfile; }
+QString EventHandler::currentFolder() { return currentfolder; }
+
+QString EventHandler::readCurrentFileContent() {
+    QString content = filedb.readFile(currentfolder, currentfile);
     return content;
 }
 
@@ -266,7 +271,7 @@ void EventHandler::deleteNote(int noteIndex) {
     QVariantMap map = note.toMap();
     QString fileName = map.value("fileName").toString();
 
-    this->filedb.deleteFile(fileName);
+    filedb.deleteFile(currentfolder, fileName);
     setCurrentFile(NULL);
     allnotes.removeAt(noteIndex);
     emit allNotesChanged();

@@ -11,14 +11,18 @@ class EventHandler : public QObject
     Q_OBJECT
     QML_ELEMENT
     Q_PROPERTY(QString currentFile READ currentFile WRITE setCurrentFile NOTIFY currentFileChanged FINAL)
+    Q_PROPERTY(QString currentFolder READ currentFolder WRITE setCurrentFolder NOTIFY currentFolderChanged FINAL)
     Q_PROPERTY(QVariantList allNotes READ allNotes WRITE setAllNotes NOTIFY allNotesChanged FINAL)
+    Q_PROPERTY(QStringList allFolders READ allFolders WRITE setAllFolders NOTIFY allFoldersChanged FINAL)
     Q_PROPERTY(QVariantMap textFormat READ textFormat WRITE setTextFormat NOTIFY textFormatChanged FINAL)
 
 private:
 
     Filedb filedb;
     QString currentfile;
+    QString currentfolder;
     QVariantList allnotes;
+    QStringList allfolders;
 
     QQuickTextDocument *textDocument;
 
@@ -47,12 +51,20 @@ public:
     Q_INVOKABLE void handleItalicClick();
     Q_INVOKABLE void handleUnderlineClick();
     Q_INVOKABLE void handleParagraphClick();
-    Q_INVOKABLE QVariantList allNotes();
-    Q_INVOKABLE void setAllNotes(const QVariantList &allNotes);
     Q_INVOKABLE void createNewNote();
     Q_INVOKABLE void saveContentToFile();
-    Q_INVOKABLE void setCurrentFile(QString filename);
+
+    Q_INVOKABLE QVariantList allNotes();
+    Q_INVOKABLE void setAllNotes(const QVariantList &allNotes);
+    Q_INVOKABLE QStringList allFolders();
+    Q_INVOKABLE void setAllFolders(const QStringList &allFolders);
+
+
     Q_INVOKABLE QString currentFile();
+    Q_INVOKABLE void setCurrentFile(QString file);
+    Q_INVOKABLE QString currentFolder();
+    Q_INVOKABLE void setCurrentFolder(QString folder);
+
     Q_INVOKABLE QString readCurrentFileContent();
     Q_INVOKABLE void deleteNote(int noteIndex);
     Q_INVOKABLE QVariantMap textFormat();
@@ -61,8 +73,10 @@ public:
     Q_INVOKABLE void detectLink();
 signals:
     void currentFileChanged(bool isNew);
-    void allNotesChanged();
     void textFormatChanged();
+    void allNotesChanged();
+    void allFoldersChanged();
+    void currentFolderChanged();
 };
 
 #endif

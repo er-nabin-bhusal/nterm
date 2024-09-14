@@ -9,7 +9,7 @@ Filedb::Filedb() {
 
 QString Filedb::getOrCreateNotesDir() {
     QString homeDirPath = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
-    QString notesDirPath = QDir(homeDirPath).filePath("nterm/notes");
+    QString notesDirPath = QDir(homeDirPath).filePath("nterm");
 
     QDir notesDir(notesDirPath);
     if (!notesDir.exists()) {
@@ -19,41 +19,52 @@ QString Filedb::getOrCreateNotesDir() {
     return notesDirPath;
 }
 
-void Filedb::writeContentToFile(QString fileName, QString content) {
-    QFile file(QDir(this->notesFilePath).filePath(fileName));
+void Filedb::writeContentToFile(QString folder, QString file, QString content) {
+    QString folderPath = QString("%1/%2").arg(notesFilePath, folder);
 
-    if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        QTextStream out(&file);
+    QFile noteFile(QDir(folderPath).filePath(file));
+
+    if (noteFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        QTextStream out(&noteFile);
         content.replace("\u200B", "");
         out << content;
-        file.close();
+        noteFile.close();
     }
 }
 
-QStringList Filedb::listAllNotes() {
-    QString notesDirPath = getOrCreateNotesDir();
+QStringList Filedb::listNotes(QString folder) {
+    QString notesDirPath = QString("%1/%2").arg(getOrCreateNotesDir(), folder);
     QDir notesDir(notesDirPath);
     QStringList noteFiles = notesDir.entryList(QStringList() << "*.html", QDir::Files, QDir::Time);
     return noteFiles;
 }
 
-QString Filedb::readFile(QString filename) {
-    QString notesPath = QDir(this->notesFilePath).filePath(filename);
+QStringList Filedb::listFolders() {
+    QString ntermFolder = getOrCreateNotesDir();
+    QDir ntermDir(ntermFolder);
+    QStringList folders = ntermDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Time);
+    return folders;
+}
+
+QString Filedb::readFile(QString folder, QString file) {
+    QString folderPath = QString("%1/%2").arg(notesFilePath, folder);
+    QString notesPath = QDir(folderPath).filePath(file);
     QString content;
-    QFile file(notesPath);
-    if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        QTextStream in(&file);
+    QFile fileObj(notesPath);
+    if (fileObj.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QTextStream in(&fileObj);
         content = in.readAll();
-        file.close();
+        fileObj.close();
     }
     return content;
 }
 
-QString Filedb::getFileTitle(QString fileName) {
+QString Filedb::getFileTitle(QString folder, QString file) {
     // Returns the title of minimum length of 50 characters
     const int MAX_TITLE_LEN = 50;
 
-    QString content = readFile(fileName);
+    // QString
+    QString content = readFile(folder, file);
     QTextDocument document;
     document.setHtml(content);
     content = document.toPlainText();
@@ -75,20 +86,30 @@ QString Filedb::getFileTitle(QString fileName) {
     return content;
 }
 
-QString Filedb::createNewNote() {
+QString Filedb::createNewNote(QString folder) {
     QDateTime currDate = QDateTime::currentDateTime();
     qint64 timestamp = currDate.toMSecsSinceEpoch();
     QString filename = QString::number(timestamp);
     filename.append(".html");
 
-    writeContentToFile(filename, "");
+    writeContentToFile(folder, filename, "");
     return filename;
 }
 
-void Filedb::deleteFile(QString filename) {
-    QFile file(QDir(this->notesFilePath).filePath(filename));
+void Filedb::createFolder(QString folder) {
+    QString folderPath = QDir(this->notesFilePath).filePath(folder);
 
-    if (file.exists()) {
-        file.remove();
+    QDir notesDir(folderPath);
+    if (!notesDir.exists()) {
+        notesDir.mkpath(folderPath);
+    }
+}
+
+void Filedb::deleteFile(QString folder, QString file) {
+    QString folderPath = QString("%1/%2").arg(notesFilePath, folder);
+    QFile fileObj(QDir(folderPath).filePath(file));
+
+    if (fileObj.exists()) {
+        fileObj.remove();
     }
 }
