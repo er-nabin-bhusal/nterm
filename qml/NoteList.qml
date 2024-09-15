@@ -77,7 +77,7 @@ ColumnLayout {
                 Rectangle {
                     height: 1
                     width: parent.width
-                    color: "#C0C0C0"
+                    color: "#E8E8E8"
                     anchors {
                         bottom: parent.bottom
                         left: parent.left
