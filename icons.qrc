@@ -13,5 +13,6 @@
         <file>assets/icons/paragraphActive.svg</file>
         <file>assets/icons/delete.svg</file>
         <file>assets/icons/deleteActive.svg</file>
+        <file>assets/icons/folder.svg</file>
     </qresource>
 </RCC>

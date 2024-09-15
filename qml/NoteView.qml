@@ -79,7 +79,7 @@ SplitView {
 
             Connections {
                 target: eventHandler
-                onCurrentFileChanged: (isNew) => {
+                function onCurrentFileChanged (isNew) {
                     if (isNew) {
                         textarea.selectAll();
                         textarea.forceActiveFocus();

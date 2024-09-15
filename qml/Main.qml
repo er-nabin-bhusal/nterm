@@ -4,8 +4,8 @@ import QtQuick.Controls
 
 Window {
     id: root
-    width: 1024
-    height: 720
+    width: 1200
+    height: 800
     visible: true
     title: qsTr("NTerm")
 

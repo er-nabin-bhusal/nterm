@@ -18,7 +18,6 @@ Rectangle {
     }
 
     Image {
-        id: imgElement
         source: parent.iconSource
         anchors.centerIn: parent
         width: 30

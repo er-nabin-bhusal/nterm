@@ -5,8 +5,7 @@
 #include <QTextCursor>
 #include "filedb.h"
 
-EventHandler::EventHandler(QObject *parent) : QObject(parent)
-{
+EventHandler::EventHandler(QObject *parent) : QObject(parent) {
     Filedb filedb;
     allfolders.append(filedb.listFolders());
 
@@ -17,13 +16,7 @@ EventHandler::EventHandler(QObject *parent) : QObject(parent)
 
     // list all the available notes here
     currentfolder = allfolders.first();
-    QStringList noteFiles = filedb.listNotes(currentfolder);
-    for (const QString &fileName : noteFiles) {
-        QVariantMap variant;
-        variant["title"] = filedb.getFileTitle(currentfolder, fileName);
-        variant["fileName"] = fileName;
-        allnotes.append(variant);
-    }
+    reloadNotes();
 
     // initialize the textFormat
     textformat["heading"] = false;
@@ -31,6 +24,17 @@ EventHandler::EventHandler(QObject *parent) : QObject(parent)
     textformat["underline"] = false;
     textformat["italic"] = false;
     textformat["paragraph"] = true;
+}
+
+void EventHandler::reloadNotes() {
+    allnotes.clear();
+    QStringList noteFiles = filedb.listNotes(currentfolder);
+    for (const QString &fileName : noteFiles) {
+        QVariantMap variant;
+        variant["title"] = filedb.getFileTitle(currentfolder, fileName);
+        variant["fileName"] = fileName;
+        allnotes.append(variant);
+    }
 }
 
 void EventHandler::setTextDocument(QQuickTextDocument *textDocument) {
@@ -253,7 +257,10 @@ void EventHandler::setCurrentFile(QString file) {
 void EventHandler::setCurrentFolder(QString folder) {
     if (currentfolder != folder) {
         currentfolder = folder;
+        reloadNotes();
+        setCurrentFile(NULL);
         emit currentFolderChanged();
+        emit allNotesChanged();
     }
 }
 

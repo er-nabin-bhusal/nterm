@@ -32,6 +32,7 @@ private:
 
     QTextCursor textCursor();
     void updateFormat();
+    void reloadNotes();
 
 public:
     explicit EventHandler(QObject *parent = nullptr);
