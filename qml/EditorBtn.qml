@@ -8,8 +8,8 @@ Rectangle {
     signal clicked()
     radius: 5
     color: "transparent"
-    implicitWidth: label ? textElement.implicitWidth + 10 : 40
-    implicitHeight: label ? textElement.implicitHeight + 10 : 40
+    implicitWidth: label ? textElement.implicitWidth + 10 : 30
+    implicitHeight: label ? textElement.implicitHeight + 10 : 30
 
     Text {
         id: textElement
@@ -20,8 +20,8 @@ Rectangle {
     Image {
         source: parent.iconSource
         anchors.centerIn: parent
-        width: 30
-        height: 30
+        width: 25
+        height: 25
     }
 
     MouseArea {

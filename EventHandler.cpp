@@ -284,6 +284,16 @@ void EventHandler::deleteNote(int noteIndex) {
     emit allNotesChanged();
 }
 
+void EventHandler::deleteFolder(int index) {
+    QString folder = allfolders[index];
+    if (filedb.isEmpty(folder)) {
+        filedb.deleteFolder(folder);
+        allfolders.removeAt(index);
+        setCurrentFolder(NULL);
+        emit allFoldersChanged();
+    }
+}
+
 QVariantMap EventHandler::textFormat() {return textformat; }
 void EventHandler::setTextFormat(QVariantMap format) {}
 

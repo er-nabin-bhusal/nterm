@@ -4,7 +4,7 @@
 #include "filedb.h"
 
 Filedb::Filedb() {
-    notesFilePath = getOrCreateNotesDir();
+    basePath = getOrCreateNotesDir();
 }
 
 QString Filedb::getOrCreateNotesDir() {
@@ -20,7 +20,7 @@ QString Filedb::getOrCreateNotesDir() {
 }
 
 void Filedb::writeContentToFile(QString folder, QString file, QString content) {
-    QString folderPath = QString("%1/%2").arg(notesFilePath, folder);
+    QString folderPath = QString("%1/%2").arg(basePath, folder);
 
     QFile noteFile(QDir(folderPath).filePath(file));
 
@@ -40,6 +40,7 @@ QStringList Filedb::listNotes(QString folder) {
 }
 
 QStringList Filedb::listFolders() {
+    const int MAX_FOLDER_NAME_LEN = 10;
     QString ntermFolder = getOrCreateNotesDir();
     QDir ntermDir(ntermFolder);
     QStringList folders = ntermDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Time);
@@ -47,7 +48,7 @@ QStringList Filedb::listFolders() {
 }
 
 QString Filedb::readFile(QString folder, QString file) {
-    QString folderPath = QString("%1/%2").arg(notesFilePath, folder);
+    QString folderPath = QString("%1/%2").arg(basePath, folder);
     QString notesPath = QDir(folderPath).filePath(file);
     QString content;
     QFile fileObj(notesPath);
@@ -97,7 +98,7 @@ QString Filedb::createNewNote(QString folder) {
 }
 
 void Filedb::createFolder(QString folder) {
-    QString folderPath = QDir(this->notesFilePath).filePath(folder);
+    QString folderPath = QDir(basePath).filePath(folder);
 
     QDir notesDir(folderPath);
     if (!notesDir.exists()) {
@@ -106,10 +107,21 @@ void Filedb::createFolder(QString folder) {
 }
 
 void Filedb::deleteFile(QString folder, QString file) {
-    QString folderPath = QString("%1/%2").arg(notesFilePath, folder);
+    QString folderPath = QString("%1/%2").arg(basePath, folder);
     QFile fileObj(QDir(folderPath).filePath(file));
 
     if (fileObj.exists()) {
         fileObj.remove();
     }
+}
+
+bool Filedb::isEmpty(QString folder) {
+    QStringList notes = listNotes(folder);
+    return notes.empty();
+}
+
+void Filedb::deleteFolder(QString folder) {
+    QString folderPath = QString("%1/%2").arg(basePath, folder);
+    QDir dir(folderPath);
+    bool response = dir.removeRecursively();
 }

@@ -6,7 +6,7 @@
 class Filedb
 {
 private:
-    QString notesFilePath;
+    QString basePath;
     QString getOrCreateNotesDir();
 
 public:
@@ -17,8 +17,10 @@ public:
     QString getFileTitle(QString folder, QString file);
     void createFolder(QString folder);
     QString createNewNote(QString folder);
+    void deleteFolder(QString folder);
     QString readFile(QString folder, QString file);
     void deleteFile(QString folder, QString file);
+    bool isEmpty(QString folder);
 };
 
 #endif // FILEDB_H

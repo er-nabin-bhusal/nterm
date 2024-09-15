@@ -59,6 +59,7 @@ public:
     Q_INVOKABLE void setAllNotes(const QVariantList &allNotes);
     Q_INVOKABLE QStringList allFolders();
     Q_INVOKABLE void setAllFolders(const QStringList &allFolders);
+    Q_INVOKABLE void deleteFolder(int index);
 
 
     Q_INVOKABLE QString currentFile();

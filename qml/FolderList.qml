@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Controls
 
 ColumnLayout {
     anchors.fill: parent
@@ -38,18 +39,35 @@ ColumnLayout {
                 Text {
                     id: text
                     padding: 5
-                    wrapMode: Text.Wrap
+                    wrapMode: Text.NoWrap
                     text: modelData
                     anchors.left: folderIcon.right
                     anchors.right: parent.right
+                    elide: Text.ElideRight
                     anchors.verticalCenter: parent.verticalCenter
                 }
 
                 MouseArea {
                     anchors.fill: parent
-                    onClicked: {
-                        folderList.currentIndex = index;
-                        eventHandler.setCurrentFolder(modelData);
+                    acceptedButtons: Qt.LeftButton | Qt.RightButton
+                    onClicked: function(mouse) {
+                        if (mouse.button === Qt.RightButton) {
+                            contextMenu.popup();
+                        } else {
+                            folderList.currentIndex = index;
+                            eventHandler.setCurrentFolder(modelData);
+                        }
+                    }
+
+                    Menu {
+                        id: contextMenu
+                        MenuItem { text: "Rename" }
+                        MenuItem {
+                            text: "Delete"
+                            onTriggered: {
+                                eventHandler.deleteFolder(index);
+                            }
+                        }
                     }
                 }
             }

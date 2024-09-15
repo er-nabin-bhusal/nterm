@@ -10,8 +10,8 @@ SplitView {
 
     Rectangle {
         id: leftNavcon
-        SplitView.preferredWidth: 350
-        SplitView.minimumWidth: 250
+        SplitView.preferredWidth: 400
+        SplitView.minimumWidth: 300
 
         LeftContainer {}
     }
