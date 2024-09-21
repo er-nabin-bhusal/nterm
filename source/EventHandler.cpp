@@ -1,9 +1,10 @@
-#include "EventHandler.h"
 #include <QtQml>
 #include <QDebug>
 #include <QQuickTextDocument>
 #include <QTextCursor>
-#include "filedb.h"
+#include "source/EventHandler.h"
+#include "source/Filedb.h"
+#include "source/PopupHandler.h"
 
 EventHandler::EventHandler(QObject *parent) : QObject(parent) {
     Filedb filedb;
@@ -291,6 +292,10 @@ void EventHandler::deleteFolder(int index) {
         allfolders.removeAt(index);
         setCurrentFolder(NULL);
         emit allFoldersChanged();
+    } else {
+        PopupHandler *instance = PopupHandler::instance();
+        instance->setMessage("Folder should be empty!");
+        emit instance->messageChanged();
     }
 }
 

@@ -6,17 +6,15 @@ set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# set(Qt6_DIR "/home/nihshreyas/Qt/6.5.3/gcc_64/lib/cmake/Qt6") -> to make it work in VSCode
-
 find_package(Qt6 6.5 REQUIRED COMPONENTS Quick Widgets)
 
 qt_standard_project_setup(REQUIRES 6.5)
 
 qt_add_executable(appnterm
-    main.cpp
+    source/main.cpp
 )
 
-
+qt_policy(SET QTP0004 NEW)
 qt_add_qml_module(appnterm
     URI nterm
     VERSION 1.0
@@ -29,10 +27,9 @@ qt_add_qml_module(appnterm
         qml/NoteList.qml
 
     SOURCES
-        EventHandler.h
-        EventHandler.cpp
-        filedb.h
-        filedb.cpp
+        source/EventHandler.h source/EventHandler.cpp
+        source/Filedb.h source/Filedb.cpp
+        source/PopupHandler.h source/PopupHandler.cpp
 
     RESOURCES
         assets/logo.png
@@ -55,6 +52,7 @@ target_link_libraries(appnterm
     PRIVATE Qt6::Quick
     PRIVATE Qt6::Widgets
 )
+target_include_directories(appnterm PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/source)
 
 include(GNUInstallDirs)
 install(TARGETS appnterm

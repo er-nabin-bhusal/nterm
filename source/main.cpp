@@ -2,27 +2,26 @@
 #include <QQmlApplicationEngine>
 #include <QFontDatabase>
 #include <QIcon>
-#include <EventHandler.h>
+#include "source/EventHandler.h"
+#include "source/PopupHandler.h"
 
 // HIGHLIGHT ICON COLOR: #3276C7
-
 int main(int argc, char *argv[]) {
     QGuiApplication app(argc, argv);
     app.setWindowIcon(QIcon("nterm/assets/logo.png"));
 
+    /** SetUp Font Family **/
     QFontDatabase::addApplicationFont(":/assets/fonts/inter/InterRegular.ttf");
-
-    int id = QFontDatabase::addApplicationFont(":/assets/fonts/inter/Inter24ptBlack.ttf");
-    qDebug() << "value of ID: " << id;
-
+    QFontDatabase::addApplicationFont(":/assets/fonts/inter/Inter24ptBlack.ttf");
     QGuiApplication::setFont(QFont("Inter"));
-
 
     QQmlApplicationEngine engine;
     EventHandler eventHandler;
 
     QQmlContext *rootContext = engine.rootContext();
     rootContext->setContextProperty("eventHandler", &eventHandler);
+    rootContext->setContextProperty("popupHandler", PopupHandler::instance());
+
 
     QObject::connect(
         &engine,

@@ -1,7 +1,7 @@
 #include <QtQml>
 #include <QCoreApplication>
 #include <QTextDocument>
-#include "filedb.h"
+#include "source/Filedb.h"
 
 Filedb::Filedb() {
     basePath = getOrCreateNotesDir();
