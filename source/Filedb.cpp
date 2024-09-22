@@ -97,14 +97,38 @@ QString Filedb::createNewNote(QString folder) {
     return filename;
 }
 
-void Filedb::createFolder(QString folder) {
-    QString folderPath = QDir(basePath).filePath(folder);
-
+QString Filedb::createFolder(QString folder) {
+    QString folderName = folder;
+    QString folderPath = QDir(basePath).filePath(folderName);
     QDir notesDir(folderPath);
-    if (!notesDir.exists()) {
-        notesDir.mkpath(folderPath);
+
+    int postFix = 1;
+    while (notesDir.exists()) {
+        folderName = folder + QString::number(postFix);
+        folderPath = QDir(basePath).filePath(folderName);
+        notesDir.setPath(folderPath);
+        postFix++;
     }
+
+    notesDir.mkpath(folderPath);
+    return folderName;
 }
+
+bool Filedb::renameFolder(QString oldName, QString newName) {
+    QString oldFolderPath = QDir(basePath).filePath(oldName);
+    QString newFolderPath = QDir(basePath).filePath(newName);
+
+    QDir oldDir(oldFolderPath);
+    QDir newDir(newFolderPath);
+
+    if (newDir.exists()) {
+        return false;
+    }
+
+    oldDir.rename(oldFolderPath, newFolderPath);
+    return true;
+}
+
 
 void Filedb::deleteFile(QString folder, QString file) {
     QString folderPath = QString("%1/%2").arg(basePath, folder);
@@ -123,5 +147,5 @@ bool Filedb::isEmpty(QString folder) {
 void Filedb::deleteFolder(QString folder) {
     QString folderPath = QString("%1/%2").arg(basePath, folder);
     QDir dir(folderPath);
-    bool response = dir.removeRecursively();
+    dir.removeRecursively();
 }

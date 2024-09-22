@@ -13,7 +13,7 @@ class EventHandler : public QObject
     Q_PROPERTY(QString currentFile READ currentFile WRITE setCurrentFile NOTIFY currentFileChanged FINAL)
     Q_PROPERTY(QString currentFolder READ currentFolder WRITE setCurrentFolder NOTIFY currentFolderChanged FINAL)
     Q_PROPERTY(QVariantList allNotes READ allNotes WRITE setAllNotes NOTIFY allNotesChanged FINAL)
-    Q_PROPERTY(QStringList allFolders READ allFolders WRITE setAllFolders NOTIFY allFoldersChanged FINAL)
+    Q_PROPERTY(QVariantList allFolders READ allFolders WRITE setAllFolders NOTIFY allFoldersChanged FINAL)
     Q_PROPERTY(QVariantMap textFormat READ textFormat WRITE setTextFormat NOTIFY textFormatChanged FINAL)
 
 private:
@@ -22,7 +22,7 @@ private:
     QString currentfile;
     QString currentfolder;
     QVariantList allnotes;
-    QStringList allfolders;
+    QVariantList allfolders;
 
     QQuickTextDocument *textDocument;
 
@@ -33,6 +33,7 @@ private:
     QTextCursor textCursor();
     void updateFormat();
     void reloadNotes();
+    void reloadFolders();
 
 public:
     explicit EventHandler(QObject *parent = nullptr);
@@ -53,12 +54,14 @@ public:
     Q_INVOKABLE void handleUnderlineClick();
     Q_INVOKABLE void handleParagraphClick();
     Q_INVOKABLE void createNewNote();
+    Q_INVOKABLE void createNewFolder();
+    Q_INVOKABLE bool renameFolder(int index, QString folderName);
     Q_INVOKABLE void saveContentToFile();
 
     Q_INVOKABLE QVariantList allNotes();
     Q_INVOKABLE void setAllNotes(const QVariantList &allNotes);
-    Q_INVOKABLE QStringList allFolders();
-    Q_INVOKABLE void setAllFolders(const QStringList &allFolders);
+    Q_INVOKABLE QVariantList allFolders();
+    Q_INVOKABLE void setAllFolders(const QVariantList &allFolders);
     Q_INVOKABLE void deleteFolder(int index);
 
 

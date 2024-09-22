@@ -8,15 +8,10 @@
 
 EventHandler::EventHandler(QObject *parent) : QObject(parent) {
     Filedb filedb;
-    allfolders.append(filedb.listFolders());
 
-    if (allfolders.empty()) {
-        filedb.createFolder("notes");
-        allfolders.append("notes");
-    }
+    reloadFolders();
+    currentfolder = allfolders.first().toMap().value("folderName").toString();
 
-    // list all the available notes here
-    currentfolder = allfolders.first();
     reloadNotes();
 
     // initialize the textFormat
@@ -25,6 +20,21 @@ EventHandler::EventHandler(QObject *parent) : QObject(parent) {
     textformat["underline"] = false;
     textformat["italic"] = false;
     textformat["paragraph"] = true;
+}
+
+void EventHandler::reloadFolders() {
+    QStringList allFolders = filedb.listFolders();
+    if (allFolders.empty()) {
+        filedb.createFolder("Notes");
+        allFolders.append("Notes");
+    }
+
+    for (const QString &folder : allFolders) {
+        QVariantMap variant;
+        variant["folderName"] = folder;
+        variant["editAble"] = false;
+        allfolders.append(variant);
+    }
 }
 
 void EventHandler::reloadNotes() {
@@ -166,8 +176,6 @@ void EventHandler::handleParagraphClick() {
         cursor.mergeCharFormat(format);
         this->setNormalText();
     }
-
-    qDebug() << textDocument->textDocument()->toHtml();
 }
 
 void EventHandler::handleBoldClick()
@@ -197,8 +205,7 @@ void EventHandler::handleItalicClick()
     }
 }
 
-void EventHandler::handleUnderlineClick()
-{
+void EventHandler::handleUnderlineClick() {
     QTextCursor cursor = textCursor();
     QTextCharFormat format;
     format.setFontUnderline(!this->isUnderline(cursor));
@@ -209,9 +216,9 @@ void EventHandler::handleUnderlineClick()
 }
 
 QVariantList EventHandler::allNotes() { return allnotes; }
-QStringList EventHandler::allFolders() { return allfolders; }
+QVariantList EventHandler::allFolders() { return allfolders; }
 void EventHandler::setAllNotes(const QVariantList &allNotes) {}
-void EventHandler::setAllFolders(const QStringList &allFolders) {}
+void EventHandler::setAllFolders(const QVariantList &allFolders) {}
 
 void EventHandler::createNewNote() {
     QString filename = filedb.createNewNote(currentfolder);
@@ -228,6 +235,33 @@ void EventHandler::createNewNote() {
 
     emit allNotesChanged();
     emit currentFileChanged(true);
+}
+
+void EventHandler::createNewFolder() {
+    QVariantMap variant;
+    QString folder = filedb.createFolder("Notes");
+
+    variant["folderName"] = folder;
+    variant["editAble"] = true;
+    allfolders.append(variant);
+
+    emit allFoldersChanged();
+}
+
+bool EventHandler::renameFolder(int index, QString folderName) {
+    QVariantMap variant = allfolders[index].toMap();
+    QString oldFolderName = variant.value("folderName").toString();
+    if (folderName == oldFolderName) return false;
+
+    bool res = filedb.renameFolder(oldFolderName, folderName);
+    if (!res) {
+        PopupHandler *instance = PopupHandler::instance();
+        instance->setMessage("Please provide a unique name!!");
+        emit instance->messageChanged();
+    }
+    variant["folderName"] = folderName;
+    allfolders[index] = variant;
+    return res;
 }
 
 void EventHandler::saveContentToFile()
@@ -286,7 +320,8 @@ void EventHandler::deleteNote(int noteIndex) {
 }
 
 void EventHandler::deleteFolder(int index) {
-    QString folder = allfolders[index];
+    QVariantMap map = allfolders[index].toMap();
+    QString folder = map.value("folderName").toString();
     if (filedb.isEmpty(folder)) {
         filedb.deleteFolder(folder);
         allfolders.removeAt(index);

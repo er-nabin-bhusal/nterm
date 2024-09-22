@@ -15,7 +15,8 @@ public:
     QStringList listNotes(QString folder);
     QStringList listFolders();
     QString getFileTitle(QString folder, QString file);
-    void createFolder(QString folder);
+    QString createFolder(QString folder);
+    bool renameFolder(QString oldName, QString newName);
     QString createNewNote(QString folder);
     void deleteFolder(QString folder);
     QString readFile(QString folder, QString file);

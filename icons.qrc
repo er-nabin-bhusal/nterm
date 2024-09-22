@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>assets/icons/create.svg</file>
         <file>assets/icons/heading.svg</file>
         <file>assets/icons/italic.svg</file>
         <file>assets/icons/underline.svg</file>
@@ -11,8 +10,8 @@
         <file>assets/icons/boldActive.svg</file>
         <file>assets/icons/paragraph.svg</file>
         <file>assets/icons/paragraphActive.svg</file>
-        <file>assets/icons/delete.svg</file>
-        <file>assets/icons/deleteActive.svg</file>
         <file>assets/icons/folder.svg</file>
+        <file>assets/icons/addFolder.svg</file>
+        <file>assets/icons/addNote.svg</file>
     </qresource>
 </RCC>

@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Controls
 
 ColumnLayout {
     anchors.fill: parent
@@ -12,21 +13,10 @@ ColumnLayout {
         Layout.preferredWidth: parent.width
 
         EditorBtn {
-            anchors.left: parent.left
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.leftMargin: 10
-            iconSource: eventHandler.currentFile ? "qrc:/assets/icons/deleteActive.svg" : "qrc:/assets/icons/delete.svg"
-
-            onClicked: {
-                eventHandler.deleteNote(noteListView.currentIndex);
-            }
-        }
-
-        EditorBtn {
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
             anchors.rightMargin: 10
-            iconSource: "qrc:/assets/icons/create.svg"
+            iconSource: "qrc:/assets/icons/addNote.svg"
 
             onClicked: {
                 eventHandler.createNewNote();
@@ -69,9 +59,25 @@ ColumnLayout {
 
                 MouseArea {
                     anchors.fill: parent
-                    onClicked: {
-                        noteListView.currentIndex = index;
-                        eventHandler.setCurrentFile(modelData.fileName);
+                    acceptedButtons: Qt.LeftButton | Qt.RightButton
+
+                    onClicked: function (mouse) {
+                        if (mouse.button === Qt.RightButton) {
+                            contextMenu.popup();
+                        } else {
+                            noteListView.currentIndex = index;
+                            eventHandler.setCurrentFile(modelData.fileName);
+                        }
+                    }
+
+                    Menu {
+                        id: contextMenu
+                        MenuItem {
+                            text: "Delete"
+                            onTriggered: {
+                                eventHandler.deleteNote(index);
+                            }
+                        }
                     }
                 }
                 Rectangle {
