@@ -39,7 +39,7 @@ ColumnLayout {
 
             delegate: Rectangle {
                 id: folderRect
-                color: (folderList.currentIndex === index && eventHandler.currentFolder) ? "#C0C0C0" : "transparent"
+                color: (eventHandler.currentFolder === modelData.folderName) ? "#C0C0C0" : "transparent"
                 implicitHeight: 40
                 anchors {
                     left: parent.left

@@ -244,7 +244,6 @@ void EventHandler::createNewFolder() {
     variant["folderName"] = folder;
     variant["editAble"] = true;
     allfolders.append(variant);
-
     emit allFoldersChanged();
 }
 
@@ -261,6 +260,9 @@ bool EventHandler::renameFolder(int index, QString folderName) {
     }
     variant["folderName"] = folderName;
     allfolders[index] = variant;
+
+    if (currentfolder == oldFolderName) currentfolder = folderName;
+    emit allFoldersChanged();
     return res;
 }
 
@@ -308,13 +310,12 @@ QString EventHandler::readCurrentFileContent() {
 }
 
 void EventHandler::deleteNote(int noteIndex) {
-    if (currentfile.isEmpty()) return;
     QVariant note = allnotes.at(noteIndex);
     QVariantMap map = note.toMap();
     QString fileName = map.value("fileName").toString();
 
     filedb.deleteFile(currentfolder, fileName);
-    setCurrentFile(NULL);
+    if (currentfile == fileName) setCurrentFile(NULL);
     allnotes.removeAt(noteIndex);
     emit allNotesChanged();
 }
