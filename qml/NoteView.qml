@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Layouts
 
 
 SplitView {
@@ -15,79 +14,26 @@ SplitView {
 
         LeftContainer {}
     }
-
     Rectangle {
         SplitView.fillWidth: true
 
-        Rectangle {
+        EditorToolbar {
             id: toolbar
-            color: "transparent"
-            height: 50
             width: parent.width
-
-            RowLayout {
-                spacing: 10
-                Layout.alignment: Qt.AlignLeft
-
-                EditorBtn {
-                    iconSource: eventHandler.textFormat.paragraph ? "qrc:/assets/icons/paragraphActive.svg": "qrc:/assets/icons/paragraph.svg"
-                    onClicked: () => {
-                        eventHandler.handleParagraphClick();
-                    }
-                }
-
-                EditorBtn {
-                    iconSource: eventHandler.textFormat.heading ? "qrc:/assets/icons/headingActive.svg" : "qrc:/assets/icons/heading.svg"
-                    onClicked: () => {
-                        eventHandler.handleHeadingClick();
-                    }
-                }
-
-                EditorBtn {
-                    iconSource: eventHandler.textFormat.bold ? "qrc:/assets/icons/boldActive.svg" : "qrc:/assets/icons/bold.svg"
-                    onClicked: () => {
-                        eventHandler.handleBoldClick();
-                    }
-                }
-
-                EditorBtn {
-                    iconSource: eventHandler.textFormat.italic ? "qrc:/assets/icons/italicActive.svg" : "qrc:/assets/icons/italic.svg"
-                    onClicked: () => {
-                        eventHandler.handleItalicClick();
-                    }
-                }
-
-                EditorBtn {
-                    iconSource: eventHandler.textFormat.underline ? "qrc:/assets/icons/underlineActive.svg" : "qrc:/assets/icons/underline.svg"
-                    onClicked: () => {
-                        eventHandler.handleUnderlineClick();
-                    }
-                }
-            }
         }
 
         ScrollView {
-
-            width: parent.width
             palette.mid: "#D3D3D3"
 
             anchors {
                 top: toolbar.bottom
                 left: parent.left
                 bottom: parent.bottom
-            }
+                right: parent.right
 
-            Connections {
-                target: eventHandler
-                function onCurrentFileChanged (isNew) {
-                    if (isNew) {
-                        textarea.selectAll();
-                        textarea.forceActiveFocus();
-                        eventHandler.setSelection(textarea.selectionStart, textarea.selectionEnd);
-                    } else {
-                        textarea.text = eventHandler.readCurrentFileContent();
-                    }
-                }
+                topMargin: 0.05 * parent.height
+                leftMargin: 0.1 * parent.width
+                rightMargin: 0.1 * parent.width
             }
 
             TextArea {
@@ -163,5 +109,17 @@ SplitView {
             }
         }
 
+        Connections {
+            target: eventHandler
+            function onCurrentFileChanged (isNew) {
+                if (isNew) {
+                    textarea.selectAll();
+                    textarea.forceActiveFocus();
+                    eventHandler.setSelection(textarea.selectionStart, textarea.selectionEnd);
+                } else {
+                    textarea.text = eventHandler.readCurrentFileContent();
+                }
+            }
+        }
     }
 }

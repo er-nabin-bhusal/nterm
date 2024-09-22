@@ -25,6 +25,7 @@ qt_add_qml_module(appnterm
         qml/LeftContainer.qml
         qml/FolderList.qml
         qml/NoteList.qml
+        qml/EditorToolbar.qml
 
     SOURCES
         source/EventHandler.h source/EventHandler.cpp
