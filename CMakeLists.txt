@@ -31,6 +31,7 @@ qt_add_qml_module(appnterm
         source/EventHandler.h source/EventHandler.cpp
         source/Filedb.h source/Filedb.cpp
         source/PopupHandler.h source/PopupHandler.cpp
+        source/Constants.h source/Constants.cpp
 
     RESOURCES
         assets/logo.png

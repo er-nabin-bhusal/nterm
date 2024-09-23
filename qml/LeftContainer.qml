@@ -1,10 +1,14 @@
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Layouts
 
 SplitView {
     anchors.fill: parent
     orientation: Qt.Horizontal
+    handle: Rectangle {
+        implicitWidth: 0.5
+        implicitHeight: 0.5
+        color: SplitHandle.pressed ? "#3276C7" : "lightgray"
+    }
 
     Rectangle {
         color: "#F7F7F7"

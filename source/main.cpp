@@ -4,8 +4,8 @@
 #include <QIcon>
 #include "source/EventHandler.h"
 #include "source/PopupHandler.h"
+#include "source/Constants.h"
 
-// HIGHLIGHT ICON COLOR: #3276C7
 int main(int argc, char *argv[]) {
     QGuiApplication app(argc, argv);
     app.setWindowIcon(QIcon("nterm/assets/logo.png"));
@@ -17,10 +17,12 @@ int main(int argc, char *argv[]) {
 
     QQmlApplicationEngine engine;
     EventHandler eventHandler;
+    Constants constants;
 
     QQmlContext *rootContext = engine.rootContext();
     rootContext->setContextProperty("eventHandler", &eventHandler);
     rootContext->setContextProperty("popupHandler", PopupHandler::instance());
+    rootContext->setContextProperty("constants", &constants);
 
 
     QObject::connect(

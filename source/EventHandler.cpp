@@ -164,7 +164,8 @@ void EventHandler::handleParagraphClick() {
     QTextCharFormat format;
     format.setFontItalic(false);
     format.setFontUnderline(false);
-    format.setForeground(Qt::black);
+    // format.setForeground(Qt::black);
+    // format.setForeground();
     format.setAnchor(false);
     format.setAnchorHref(NULL);
 

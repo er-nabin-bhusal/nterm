@@ -53,7 +53,7 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.right: parent.right
-        height: 1
+        implicitHeight: 1
         color: "lightgray"
     }
 }

@@ -6,6 +6,11 @@ SplitView {
     id: notesContainer
     anchors.fill: parent
     orientation: Qt.Horizontal
+    handle: Rectangle {
+        implicitWidth: 0.5
+        implicitHeight: 0.5
+        color: SplitHandle.pressed ? "#3276C7" : "lightgray"
+    }
 
     Rectangle {
         id: leftNavcon
@@ -38,8 +43,9 @@ SplitView {
 
             TextArea {
                 id: textarea
-                selectionColor: "#cce5ff"
-                selectedTextColor: "#000"
+                color: constants.textColor
+                selectionColor: constants.textSelectionColor
+                selectedTextColor: constants.textSelectedColor
                 textFormat: TextEdit.AutoText
                 wrapMode: Text.Wrap
                 readOnly: !eventHandler.currentFile
