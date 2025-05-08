@@ -3,7 +3,17 @@ import QtQuick.Layouts
 import QtQuick.Controls
 
 ColumnLayout {
+    id: folderContainer
     anchors.fill: parent
+    property bool isSearchActive: false
+
+    Timer {
+        id: searchDebounceTimer
+        interval: 500
+        onTriggered: {
+            eventHandler.onSearchTextChange(searchTextField.text);
+        }
+    }
 
     Rectangle {
         id: toolbar
@@ -13,13 +23,57 @@ ColumnLayout {
         Layout.preferredWidth: parent.width
 
         EditorBtn {
+            id: searchButton
+            anchors.left: parent.left
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.leftMargin: 10
+            iconSource: "qrc:/assets/icons/search.svg"
+            visible: !folderContainer.isSearchActive
+            onClicked: {
+                folderContainer.isSearchActive = true;
+                searchTextField.forceActiveFocus();
+            }
+        }
+
+        EditorBtn {
+            id: addFolderButton
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
             anchors.rightMargin: 10
             iconSource: "qrc:/assets/icons/addFolder.svg"
-
+            visible: !folderContainer.isSearchActive
             onClicked: {
                 eventHandler.createNewFolder();
+            }
+        }
+
+        TextField {
+            id: searchTextField
+            anchors.left: parent.left
+            anchors.right: closeSearchButton.left
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.leftMargin: 10
+            anchors.rightMargin: 10
+            placeholderText: "Search folders..."
+            focus: true
+            visible: folderContainer.isSearchActive
+
+            onTextChanged: {
+                searchDebounceTimer.restart();
+            }
+        }
+
+        EditorBtn {
+            id: closeSearchButton
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.rightMargin: 10
+            iconSource: "qrc:/assets/icons/close.svg"
+            visible: folderContainer.isSearchActive
+
+            onClicked: {
+                folderContainer.isSearchActive = false;
+                searchTextField.text = "";
             }
         }
     }

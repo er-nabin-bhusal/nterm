@@ -17,7 +17,6 @@ class EventHandler : public QObject
     Q_PROPERTY(QVariantMap textFormat READ textFormat WRITE setTextFormat NOTIFY textFormatChanged FINAL)
 
 private:
-
     Filedb filedb;
     QString currentfile;
     QString currentfolder;
@@ -52,9 +51,11 @@ public:
     Q_INVOKABLE void handleHeadingClick();
     Q_INVOKABLE void handleItalicClick();
     Q_INVOKABLE void handleUnderlineClick();
+    Q_INVOKABLE void handleCodeBlockClick();
     Q_INVOKABLE void handleParagraphClick();
     Q_INVOKABLE void createNewNote();
     Q_INVOKABLE void createNewFolder();
+    Q_INVOKABLE void onSearchTextChange(const QString &searchText);
     Q_INVOKABLE bool renameFolder(int index, QString folderName);
     Q_INVOKABLE void saveContentToFile();
 
@@ -63,7 +64,6 @@ public:
     Q_INVOKABLE QVariantList allFolders();
     Q_INVOKABLE void setAllFolders(const QVariantList &allFolders);
     Q_INVOKABLE void deleteFolder(int index);
-
 
     Q_INVOKABLE QString currentFile();
     Q_INVOKABLE void setCurrentFile(QString file);

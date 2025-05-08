@@ -11,7 +11,9 @@ class Constants: public QObject {
     Q_PROPERTY(QString textSelectedColor READ textSelectedColor CONSTANT)
 
 public:
-    Constants(QObject *parent = nullptr);
+
+    static Constants* instance();
+    explicit Constants(QObject *parent = nullptr);
     QString textColor();
     QString highlightBlue();
     QString textSelectionColor();

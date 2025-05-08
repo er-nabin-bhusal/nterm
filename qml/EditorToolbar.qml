@@ -46,6 +46,14 @@ Rectangle {
                 eventHandler.handleUnderlineClick();
             }
         }
+
+        EditorBtn {
+            iconSource: eventHandler.textFormat.codeBlock ? "qrc:/assets/icons/codeBlockActive.svg" : "qrc:/assets/icons/codeBlock.svg"
+            onClicked: () => {
+                eventHandler.handleCodeBlockClick();
+            }
+        }
+
         Rectangle { Layout.fillWidth: true }
     }
 

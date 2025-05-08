@@ -5,8 +5,8 @@ SplitView {
     anchors.fill: parent
     orientation: Qt.Horizontal
     handle: Rectangle {
-        implicitWidth: 0.5
-        implicitHeight: 0.5
+        implicitWidth: 0.8
+        implicitHeight: 0.8
         color: SplitHandle.pressed ? "#3276C7" : "lightgray"
     }
 

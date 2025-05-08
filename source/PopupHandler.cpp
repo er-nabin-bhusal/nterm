@@ -1,7 +1,7 @@
 #include "source/PopupHandler.h"
 #include <QDebug>
 
-PopupHandler* instance_=nullptr;
+static PopupHandler* instance_ =nullptr;
 
 PopupHandler* PopupHandler::instance() {
     if (!instance_) instance_ = new PopupHandler();

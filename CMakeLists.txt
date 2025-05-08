@@ -14,7 +14,7 @@ qt_add_executable(appnterm
     source/main.cpp
 )
 
-qt_policy(SET QTP0004 NEW)
+qt_policy(SET QTP0001 NEW)
 qt_add_qml_module(appnterm
     URI nterm
     VERSION 1.0

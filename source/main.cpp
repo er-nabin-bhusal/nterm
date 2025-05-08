@@ -13,6 +13,7 @@ int main(int argc, char *argv[]) {
     /** SetUp Font Family **/
     QFontDatabase::addApplicationFont(":/assets/fonts/inter/InterRegular.ttf");
     QFontDatabase::addApplicationFont(":/assets/fonts/inter/Inter24ptBlack.ttf");
+    QFontDatabase::addApplicationFont(":/assets/fonts/fira/FiraVariantFontWeight.ttf");
     QGuiApplication::setFont(QFont("Inter"));
 
     QQmlApplicationEngine engine;
@@ -22,7 +23,7 @@ int main(int argc, char *argv[]) {
     QQmlContext *rootContext = engine.rootContext();
     rootContext->setContextProperty("eventHandler", &eventHandler);
     rootContext->setContextProperty("popupHandler", PopupHandler::instance());
-    rootContext->setContextProperty("constants", &constants);
+    rootContext->setContextProperty("constants", Constants::instance());
 
 
     QObject::connect(

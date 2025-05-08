@@ -5,8 +5,10 @@
 #include "source/EventHandler.h"
 #include "source/Filedb.h"
 #include "source/PopupHandler.h"
+#include "source/Constants.h"
 
-EventHandler::EventHandler(QObject *parent) : QObject(parent) {
+EventHandler::EventHandler(QObject *parent) : QObject(parent)
+{
     Filedb filedb;
 
     reloadFolders();
@@ -20,16 +22,20 @@ EventHandler::EventHandler(QObject *parent) : QObject(parent) {
     textformat["underline"] = false;
     textformat["italic"] = false;
     textformat["paragraph"] = true;
+    textformat["codeBlock"] = false;
 }
 
-void EventHandler::reloadFolders() {
+void EventHandler::reloadFolders()
+{
     QStringList allFolders = filedb.listFolders();
-    if (allFolders.empty()) {
+    if (allFolders.empty())
+    {
         filedb.createFolder("Notes");
         allFolders.append("Notes");
     }
 
-    for (const QString &folder : allFolders) {
+    for (const QString &folder : allFolders)
+    {
         QVariantMap variant;
         variant["folderName"] = folder;
         variant["editAble"] = false;
@@ -37,10 +43,12 @@ void EventHandler::reloadFolders() {
     }
 }
 
-void EventHandler::reloadNotes() {
+void EventHandler::reloadNotes()
+{
     allnotes.clear();
     QStringList noteFiles = filedb.listNotes(currentfolder);
-    for (const QString &fileName : noteFiles) {
+    for (const QString &fileName : noteFiles)
+    {
         QVariantMap variant;
         variant["title"] = filedb.getFileTitle(currentfolder, fileName);
         variant["fileName"] = fileName;
@@ -48,7 +56,8 @@ void EventHandler::reloadNotes() {
     }
 }
 
-void EventHandler::setTextDocument(QQuickTextDocument *textDocument) {
+void EventHandler::setTextDocument(QQuickTextDocument *textDocument)
+{
     this->textDocument = textDocument;
 }
 
@@ -56,16 +65,20 @@ QTextCursor EventHandler::textCursor()
 {
     QTextCursor cursor = QTextCursor(this->textDocument->textDocument());
 
-    if (hasSelection()) {
+    if (hasSelection())
+    {
         cursor.setPosition(selectionStart);
         cursor.setPosition(selectionEnd, QTextCursor::KeepAnchor);
-    } else {
+    }
+    else
+    {
         cursor.setPosition(selectionEnd);
     }
     return cursor;
 }
 
-void EventHandler::updateFormat() {
+void EventHandler::updateFormat()
+{
     QTextCursor cursor = textCursor();
     bool isHeading = (cursor.charFormat().fontWeight() == QFont::Bold && cursor.charFormat().fontPointSize() == 24);
     bool isBold = cursor.charFormat().fontWeight() == QFont::Bold;
@@ -80,7 +93,8 @@ void EventHandler::updateFormat() {
     emit textFormatChanged();
 }
 
-void EventHandler::setSelection(int selectionStart, int selectionEnd) {
+void EventHandler::setSelection(int selectionStart, int selectionEnd)
+{
     this->selectionStart = selectionStart;
     this->selectionEnd = selectionEnd;
     this->updateFormat();
@@ -88,22 +102,26 @@ void EventHandler::setSelection(int selectionStart, int selectionEnd) {
 
 bool EventHandler::hasSelection() { return this->selectionStart != this->selectionEnd; }
 
-bool EventHandler::isBold(QTextCursor cursor) {
+bool EventHandler::isBold(QTextCursor cursor)
+{
     QTextCharFormat format = cursor.charFormat();
     return format.fontWeight() == QFont::Bold && format.fontPointSize() == 14;
 }
 
-bool EventHandler::isHeading(QTextCursor cursor) {
+bool EventHandler::isHeading(QTextCursor cursor)
+{
     QTextCharFormat format = cursor.charFormat();
     return format.fontWeight() == QFont::Bold && format.fontPointSize() == 24;
 }
 
-bool EventHandler::isItalic(QTextCursor cursor) {
+bool EventHandler::isItalic(QTextCursor cursor)
+{
     QTextCharFormat format = cursor.charFormat();
     return format.fontItalic();
 }
 
-bool EventHandler::isUnderline(QTextCursor cursor) {
+bool EventHandler::isUnderline(QTextCursor cursor)
+{
     QTextCharFormat format = cursor.charFormat();
     return format.fontUnderline();
 }
@@ -117,12 +135,14 @@ void EventHandler::setNormalText()
     format.setFontFamilies(QStringList("Inter"));
     cursor.mergeCharFormat(format);
 
-    if (!hasSelection()) {
+    if (!hasSelection())
+    {
         cursor.insertText(QString(QString(QChar(0x200B))));
     }
 }
 
-void EventHandler::setBlockToNormal() {
+void EventHandler::setBlockToNormal()
+{
     QTextCursor cursor = textCursor();
     cursor.select(QTextCursor::BlockUnderCursor);
     QTextCharFormat format;
@@ -131,49 +151,57 @@ void EventHandler::setBlockToNormal() {
     format.setFontFamilies(QStringList("Inter"));
     cursor.mergeCharFormat(format);
 
-    if (!hasSelection()) {
+    if (!hasSelection())
+    {
         cursor.setPosition(this->selectionEnd);
         cursor.insertText(QString(QChar(0x200B)));
     }
-
 }
 
-void EventHandler::handleHeadingClick() {
+void EventHandler::handleHeadingClick()
+{
     QTextCursor cursor = textCursor();
     cursor.select(QTextCursor::BlockUnderCursor);
     bool isHeading = (cursor.charFormat().fontPointSize() == 24);
 
-    if (isHeading) {
+    if (isHeading)
+    {
         setBlockToNormal();
-    } else {
+    }
+    else
+    {
         QTextCharFormat format;
         format.setFontWeight(QFont::Bold);
         format.setFontPointSize(24);
         format.setFontFamilies(QStringList("Inter 24pt Black"));
         cursor.mergeCharFormat(format);
 
-        if (!hasSelection()) {
+        if (!hasSelection())
+        {
             cursor.setPosition(this->selectionEnd);
             cursor.insertText(QString(QChar(0x200B)));
         }
     }
 }
 
-void EventHandler::handleParagraphClick() {
+void EventHandler::handleParagraphClick()
+{
     QTextCursor cursor = textCursor();
     QTextCharFormat format;
     format.setFontItalic(false);
     format.setFontUnderline(false);
-    // format.setForeground(Qt::black);
-    // format.setForeground();
+    format.setForeground(QColor(Constants::instance()->textColor()));
     format.setAnchor(false);
     format.setAnchorHref(NULL);
 
-    if (this->isHeading(cursor)) {
+    if (this->isHeading(cursor))
+    {
         cursor.select(QTextCursor::BlockUnderCursor);
         cursor.mergeCharFormat(format);
         this->setBlockToNormal();
-    } else {
+    }
+    else
+    {
         cursor.mergeCharFormat(format);
         this->setNormalText();
     }
@@ -183,13 +211,17 @@ void EventHandler::handleBoldClick()
 {
     QTextCursor cursor = textCursor();
 
-    if (isBold(cursor)) {
+    if (isBold(cursor))
+    {
         setNormalText();
-    } else {
+    }
+    else
+    {
         QTextCharFormat format;
         format.setFontWeight(QFont::Bold);
         cursor.mergeCharFormat(format);
-        if (!hasSelection()) {
+        if (!hasSelection())
+        {
             cursor.insertText(QString(QChar(0x200B)));
         }
     }
@@ -201,18 +233,42 @@ void EventHandler::handleItalicClick()
     QTextCharFormat format;
     format.setFontItalic(!this->isItalic(cursor));
     cursor.mergeCharFormat(format);
-    if (!hasSelection()) {
+    if (!hasSelection())
+    {
         cursor.insertText(QString(QChar(0x200B)));
     }
 }
 
-void EventHandler::handleUnderlineClick() {
+void EventHandler::handleUnderlineClick()
+{
     QTextCursor cursor = textCursor();
     QTextCharFormat format;
     format.setFontUnderline(!this->isUnderline(cursor));
     cursor.mergeCharFormat(format);
-    if (!hasSelection()) {
+    if (!hasSelection())
+    {
         cursor.insertText(QString(QChar(0x200B)));
+    }
+}
+
+void EventHandler::handleCodeBlockClick()
+{
+    QTextCursor cursor = textCursor();
+    QTextBlockFormat blockFormat;
+    blockFormat.setLeftMargin(10);
+    blockFormat.setRightMargin(10);
+    blockFormat.setBackground(QBrush(QColor("#e0e0e0"))); // Slightly darker gray background for code block
+    cursor.mergeBlockFormat(blockFormat);
+
+    QTextCharFormat charFormat;
+    charFormat.setFontFamily("Courier New"); // Use a monospaced font for code
+    charFormat.setFontPointSize(15);
+    charFormat.setForeground(QBrush(QColor(Qt::black))); // Black text color for code
+    cursor.mergeCharFormat(charFormat);
+
+    if (!hasSelection())
+    {
+        cursor.insertText("Enter your code here...");
     }
 }
 
@@ -221,7 +277,8 @@ QVariantList EventHandler::allFolders() { return allfolders; }
 void EventHandler::setAllNotes(const QVariantList &allNotes) {}
 void EventHandler::setAllFolders(const QVariantList &allFolders) {}
 
-void EventHandler::createNewNote() {
+void EventHandler::createNewNote()
+{
     QString filename = filedb.createNewNote(currentfolder);
     setCurrentFile(filename);
 
@@ -238,7 +295,8 @@ void EventHandler::createNewNote() {
     emit currentFileChanged(true);
 }
 
-void EventHandler::createNewFolder() {
+void EventHandler::createNewFolder()
+{
     QVariantMap variant;
     QString folder = filedb.createFolder("Notes");
 
@@ -248,13 +306,21 @@ void EventHandler::createNewFolder() {
     emit allFoldersChanged();
 }
 
-bool EventHandler::renameFolder(int index, QString folderName) {
+void EventHandler::onSearchTextChange(const QString &searchText)
+{
+    qDebug() << "Search text changed to:" << searchText;
+}
+
+bool EventHandler::renameFolder(int index, QString folderName)
+{
     QVariantMap variant = allfolders[index].toMap();
     QString oldFolderName = variant.value("folderName").toString();
-    if (folderName == oldFolderName) return false;
+    if (folderName == oldFolderName)
+        return false;
 
     bool res = filedb.renameFolder(oldFolderName, folderName);
-    if (!res) {
+    if (!res)
+    {
         PopupHandler *instance = PopupHandler::instance();
         instance->setMessage("Please provide a unique name!!");
         emit instance->messageChanged();
@@ -262,20 +328,26 @@ bool EventHandler::renameFolder(int index, QString folderName) {
     variant["folderName"] = folderName;
     allfolders[index] = variant;
 
-    if (currentfolder == oldFolderName) currentfolder = folderName;
+    if (currentfolder == oldFolderName)
+        currentfolder = folderName;
     emit allFoldersChanged();
     return res;
 }
 
 void EventHandler::saveContentToFile()
 {
-    if (currentfile.isNull() || currentfolder.isNull()){return;}
+    if (currentfile.isNull() || currentfolder.isNull())
+    {
+        return;
+    }
 
     filedb.writeContentToFile(currentfolder, currentfile, textDocument->textDocument()->toHtml());
 
-    for (int i=0;i<allnotes.length(); i++) {
+    for (int i = 0; i < allnotes.length(); i++)
+    {
         QVariantMap map = allnotes[i].toMap();
-        if (currentfile == map.value("fileName").toString()) {
+        if (currentfile == map.value("fileName").toString())
+        {
             map["title"] = filedb.getFileTitle(currentfolder, currentfile);
             allnotes.removeAt(i);
             allnotes.insert(0, map);
@@ -285,15 +357,19 @@ void EventHandler::saveContentToFile()
     emit allNotesChanged();
 }
 
-void EventHandler::setCurrentFile(QString file) {
-    if (currentfile != file) {
+void EventHandler::setCurrentFile(QString file)
+{
+    if (currentfile != file)
+    {
         currentfile = file;
         emit currentFileChanged(false);
     }
 }
 
-void EventHandler::setCurrentFolder(QString folder) {
-    if (currentfolder != folder) {
+void EventHandler::setCurrentFolder(QString folder)
+{
+    if (currentfolder != folder)
+    {
         currentfolder = folder;
         reloadNotes();
         setCurrentFile(NULL);
@@ -305,47 +381,56 @@ void EventHandler::setCurrentFolder(QString folder) {
 QString EventHandler::currentFile() { return currentfile; }
 QString EventHandler::currentFolder() { return currentfolder; }
 
-QString EventHandler::readCurrentFileContent() {
+QString EventHandler::readCurrentFileContent()
+{
     QString content = filedb.readFile(currentfolder, currentfile);
     return content;
 }
 
-void EventHandler::deleteNote(int noteIndex) {
+void EventHandler::deleteNote(int noteIndex)
+{
     QVariant note = allnotes.at(noteIndex);
     QVariantMap map = note.toMap();
     QString fileName = map.value("fileName").toString();
 
     filedb.deleteFile(currentfolder, fileName);
-    if (currentfile == fileName) setCurrentFile(NULL);
+    if (currentfile == fileName)
+        setCurrentFile(NULL);
     allnotes.removeAt(noteIndex);
     emit allNotesChanged();
 }
 
-void EventHandler::deleteFolder(int index) {
+void EventHandler::deleteFolder(int index)
+{
     QVariantMap map = allfolders[index].toMap();
     QString folder = map.value("folderName").toString();
-    if (filedb.isEmpty(folder)) {
+    if (filedb.isEmpty(folder))
+    {
         filedb.deleteFolder(folder);
         allfolders.removeAt(index);
         setCurrentFolder(NULL);
         emit allFoldersChanged();
-    } else {
+    }
+    else
+    {
         PopupHandler *instance = PopupHandler::instance();
         instance->setMessage("Folder should be empty!");
         emit instance->messageChanged();
     }
 }
 
-QVariantMap EventHandler::textFormat() {return textformat; }
+QVariantMap EventHandler::textFormat() { return textformat; }
 void EventHandler::setTextFormat(QVariantMap format) {}
 
 /**
  * This function is to change the block is the current format is heading.
-**/
-bool EventHandler::enterPressed() {
+ **/
+bool EventHandler::enterPressed()
+{
     QTextCursor cursor = this->textCursor();
     bool isHeading = (cursor.charFormat().fontPointSize() == 24);
-    if (!isHeading || hasSelection()) {
+    if (!isHeading || hasSelection())
+    {
         detectLink();
         return false;
     }
@@ -355,29 +440,37 @@ bool EventHandler::enterPressed() {
     return true;
 };
 
+void EventHandler::detectLink()
+{
+    /** detect link while typing, it is designed to detect link only when space is pressed **/
 
-void EventHandler::detectLink() {
     QString text = textDocument->textDocument()->toPlainText();
     int i;
-    for(i=this->selectionEnd-1;i>0;i--){
-        if (text[i] == " " || text[i] == "\n") {
+    for (i = this->selectionEnd - 1; i > 0; i--)
+    {
+        if (text[i] == QChar(' ') || text[i] == QChar('\n'))
+        {
             break;
         }
     }
-    QString word = text.mid(i, selectionEnd-i).trimmed();
-    QUrl url(word);
+    QString word = text.mid(i, selectionEnd - i).trimmed();
+    QUrl url(word, QUrl::StrictMode);
+    QStringList validSchemes = {"http", "https", "ftp", "mailto", "file", "tel", "ws", "wss", "data"};
 
-    if (url.isValid() && !url.scheme().isEmpty()) {
+    if (url.isValid() && validSchemes.contains(url.scheme().toLower()) && url.host().contains(".") && !url.host().endsWith(".") && !url.host().startsWith("."))
+    {
+
         QTextCharFormat format;
         format.setAnchor(true);
-        format.setForeground(QBrush(QColor(6, 95, 212)));
+        format.setForeground(QBrush(QColor(Constants::instance()->highlightBlue())));
         format.setAnchorHref(word);
 
         QTextCursor cursor = textCursor();
         QTextCharFormat previousFormat = cursor.charFormat();
 
-        if (!previousFormat.isAnchor()) {
-            cursor.setPosition(i+1);
+        if (!previousFormat.isAnchor())
+        {
+            cursor.setPosition(i + 1);
             cursor.setPosition(selectionEnd, QTextCursor::KeepAnchor);
             cursor.mergeCharFormat(format);
             cursor.clearSelection();
@@ -386,15 +479,3 @@ void EventHandler::detectLink() {
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-

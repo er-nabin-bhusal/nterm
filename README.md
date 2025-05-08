@@ -7,3 +7,9 @@
 - run `dpkg-deb --build linux-pkg`
 - To install the app in your local computer: `sudo dpkg -i linux-pkg.deb`
 - To remove the installed app use `sudo dpkg -r nterm`
+
+
+# Icons 
+Source: https://www.svgrepo.com
+Size: 64px
+

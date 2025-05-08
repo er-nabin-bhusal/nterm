@@ -13,5 +13,9 @@
         <file>assets/icons/folder.svg</file>
         <file>assets/icons/addFolder.svg</file>
         <file>assets/icons/addNote.svg</file>
+        <file>assets/icons/codeBlockActive.svg</file>
+        <file>assets/icons/codeBlock.svg</file>
+        <file>assets/icons/search.svg</file>
+        <file>assets/icons/close.svg</file>
     </qresource>
 </RCC>
