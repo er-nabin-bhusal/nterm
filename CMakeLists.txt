@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.16)
 
 project(nterm VERSION 0.1 LANGUAGES CXX)
 
+set(CMAKE_PREFIX_PATH "/home/nihshreyas/Qt/6.7.3/gcc_64")
+
 set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -54,7 +56,11 @@ target_link_libraries(appnterm
     PRIVATE Qt6::Quick
     PRIVATE Qt6::Widgets
 )
-target_include_directories(appnterm PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/source)
+target_include_directories(appnterm PRIVATE 
+    ${CMAKE_CURRENT_SOURCE_DIR}/source
+    ${Qt6Quick_INCLUDE_DIRS}
+    ${Qt6Widgets_INCLUDE_DIRS}
+)
 
 include(GNUInstallDirs)
 install(TARGETS appnterm

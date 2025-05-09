@@ -59,6 +59,7 @@ ColumnLayout {
             visible: folderContainer.isSearchActive
 
             onTextChanged: {
+                console.log("Text changed:", text);
                 searchDebounceTimer.restart();
             }
         }
