@@ -12,21 +12,22 @@ EventHandler::EventHandler(QObject *parent) : QObject(parent)
     Filedb filedb;
 
     reloadFolders();
-    currentfolder = allfolders.first().toMap().value("folderName").toString();
+    this->searchText = "";
 
     reloadNotes();
 
     // initialize the textFormat
-    textformat["heading"] = false;
-    textformat["bold"] = false;
-    textformat["underline"] = false;
-    textformat["italic"] = false;
-    textformat["paragraph"] = true;
-    textformat["codeBlock"] = false;
+    this->textformat["heading"] = false;
+    this->textformat["bold"] = false;
+    this->textformat["underline"] = false;
+    this->textformat["italic"] = false;
+    this->textformat["paragraph"] = true;
+    this->textformat["codeBlock"] = false;
 }
 
 void EventHandler::reloadFolders()
 {
+    this->allfolders.clear();
     QStringList allFolders = filedb.listFolders();
     if (allFolders.empty())
     {
@@ -41,14 +42,23 @@ void EventHandler::reloadFolders()
         variant["editAble"] = false;
         allfolders.append(variant);
     }
+    this->currentfolder = allfolders.first().toMap().value("folderName").toString();
 }
 
 void EventHandler::reloadNotes()
 {
-    allnotes.clear();
+    this->allnotes.clear();
     QStringList noteFiles = filedb.listNotes(currentfolder);
     for (const QString &fileName : noteFiles)
     {
+        if (!this->searchText.isEmpty())
+        {
+            QString content = filedb.readFile(currentfolder, fileName);
+            if (!searchInString(content, this->searchText))
+            {
+                continue;
+            }
+        }
         QVariantMap variant;
         variant["title"] = filedb.getFileTitle(currentfolder, fileName);
         variant["fileName"] = fileName;
@@ -306,11 +316,6 @@ void EventHandler::createNewFolder()
     emit allFoldersChanged();
 }
 
-void EventHandler::onSearchTextChange(const QString &searchText)
-{
-    qDebug() << "Search text changed to:" << searchText;
-}
-
 bool EventHandler::renameFolder(int index, QString folderName)
 {
     QVariantMap variant = allfolders[index].toMap();
@@ -478,4 +483,70 @@ void EventHandler::detectLink()
             cursor.insertText(QChar(0x200B));
         }
     }
+}
+
+void EventHandler::onSearchTextChange(const QString &searchText)
+{
+    this->searchText = searchText;
+    setCurrentFile(NULL);
+
+    if (searchText.isEmpty())
+    {
+        reloadFolders();
+        reloadNotes();
+        emit allFoldersChanged();
+        emit allNotesChanged();
+        return;
+    }
+
+    this->allfolders.clear();
+    this->allnotes.clear();
+
+    QStringList allFoldersList = filedb.listFolders();
+    QSet<QString> foldersWithMatchingNotes;
+
+    // First pass: identify folders that contain notes with the search term
+    for (const QString &folder : allFoldersList)
+    {
+        QStringList noteFiles = filedb.listNotes(folder);
+        for (const QString &fileName : noteFiles)
+        {
+            QString content = filedb.readFile(folder, fileName);
+
+            if (searchInString(content, searchText))
+            {
+                foldersWithMatchingNotes.insert(folder);
+            }
+        }
+    }
+
+    for (const QString &folder : foldersWithMatchingNotes)
+    {
+        QVariantMap folderVariant;
+        folderVariant["folderName"] = folder;
+        folderVariant["editAble"] = false;
+        this->allfolders.append(folderVariant);
+    }
+
+    if (!this->allfolders.isEmpty())
+    {
+        this->currentfolder = this->allfolders.first().toMap().value("folderName").toString();
+        reloadNotes();
+    }
+
+    emit allFoldersChanged();
+    emit allNotesChanged();
+}
+
+bool EventHandler::searchInString(const QString &content, const QString &searchTerm)
+{
+    QTextDocument doc;
+    doc.setHtml(content);
+    QString plainText = doc.toPlainText();
+
+    if (plainText.contains(searchTerm, Qt::CaseInsensitive))
+    {
+        return true;
+    }
+    return false;
 }

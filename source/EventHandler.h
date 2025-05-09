@@ -22,6 +22,7 @@ private:
     QString currentfolder;
     QVariantList allnotes;
     QVariantList allfolders;
+    QString searchText;
 
     QQuickTextDocument *textDocument;
 
@@ -33,6 +34,7 @@ private:
     void updateFormat();
     void reloadNotes();
     void reloadFolders();
+    bool searchInString(const QString &content, const QString &searchTerm);
 
 public:
     explicit EventHandler(QObject *parent = nullptr);

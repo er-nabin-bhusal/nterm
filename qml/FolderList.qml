@@ -74,6 +74,7 @@ ColumnLayout {
             onClicked: {
                 folderContainer.isSearchActive = false;
                 searchTextField.text = "";
+                eventHandler.onSearchTextChange("");
             }
         }
     }
