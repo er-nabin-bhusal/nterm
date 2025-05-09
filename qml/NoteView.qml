@@ -49,7 +49,7 @@ SplitView {
                 selectedTextColor: constants.textSelectedColor
                 textFormat: TextEdit.AutoText
                 wrapMode: Text.Wrap
-                readOnly: !eventHandler.currentFile
+                readOnly: !(eventHandler && eventHandler.currentFile)
                 font.pointSize: 14
                 focus: true
 
@@ -58,12 +58,14 @@ SplitView {
                     interval: 300
                     repeat: false
                     onTriggered: {
-                        eventHandler.saveContentToFile();
+                        if (eventHandler) eventHandler.saveContentToFile();
                     }
                 }
 
 
                 Keys.onPressed: (event) => {
+                    if (!eventHandler) return;
+                    
                     if (event.modifiers & Qt.ControlModifier) {
                         switch (event.key) {
                             case Qt.Key_B:
@@ -102,12 +104,14 @@ SplitView {
                 }
 
                 Component.onCompleted: {
-                    eventHandler.setTextDocument(textarea.textDocument);
-                    Qt.callLater(() => {
-                        if (eventHandler.currentFile) {
-                            textarea.text = eventHandler.readCurrentFileContent();
-                        }
-                    });
+                    if (eventHandler) {
+                        eventHandler.setTextDocument(textarea.textDocument);
+                        Qt.callLater(() => {
+                            if (eventHandler && eventHandler.currentFile) {
+                                textarea.text = eventHandler.readCurrentFileContent();
+                            }
+                        });
+                    }
                 }
 
                 onLinkActivated: (exLink) => {

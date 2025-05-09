@@ -31,22 +31,21 @@ ColumnLayout {
         ListView {
             id: noteListView
             anchors.fill: parent
-            model: eventHandler.allNotes
+            model: eventHandler ? eventHandler.allNotes : []
             focus: true
             clip: true
             spacing: 1
 
             delegate: Rectangle {
-                color: (noteListView.currentIndex === index && eventHandler.currentFile) ? "#C0C0C0" : "transparent"
+                color: (noteListView.currentIndex === index && eventHandler && eventHandler.currentFile) ? "#C0C0C0" : "transparent"
                 implicitHeight: text.implicitHeight + 5
 
-                anchors {
-                    left: parent.left
-                    right: parent.right
-                    leftMargin: 5
-                    rightMargin: 5
+                Component.onCompleted: {   
+                    anchors.left = parent.left
+                    anchors.right = parent.right
+                    anchors.leftMargin = 5
+                    anchors.rightMargin = 5
                 }
-
 
                 Text {
                     id: text

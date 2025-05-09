@@ -1,7 +1,10 @@
-#include <QtQml>
-#include <QCoreApplication>
+#include "Filedb.h"
+#include <QStandardPaths>
+#include <QDir>
+#include <QFile>
+#include <QTextStream>
+#include <QDateTime>
 #include <QTextDocument>
-#include "source/Filedb.h"
 
 Filedb::Filedb()
 {
@@ -22,38 +25,23 @@ QString Filedb::getOrCreateNotesDir()
     return notesDirPath;
 }
 
-void Filedb::writeContentToFile(QString folder, QString file, QString content)
+// File operations
+void Filedb::writeContentToFile(const QString &folder, const QString &file, const QString &content)
 {
     QString folderPath = QString("%1/%2").arg(basePath, folder);
-
     QFile noteFile(QDir(folderPath).filePath(file));
 
     if (noteFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         QTextStream out(&noteFile);
-        content.replace("\u200B", "");
-        out << content;
+        QString modifiedContent = content;
+        modifiedContent.replace("\u200B", "");
+        out << modifiedContent;
         noteFile.close();
     }
 }
 
-QStringList Filedb::listNotes(QString folder)
-{
-    QString notesDirPath = QString("%1/%2").arg(getOrCreateNotesDir(), folder);
-    QDir notesDir(notesDirPath);
-    QStringList noteFiles = notesDir.entryList(QStringList() << "*.html", QDir::Files, QDir::Time);
-    return noteFiles;
-}
-
-QStringList Filedb::listFolders()
-{
-    QString ntermFolder = getOrCreateNotesDir();
-    QDir ntermDir(ntermFolder);
-    QStringList folders = ntermDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Time);
-    return folders;
-}
-
-QString Filedb::readFile(QString folder, QString file)
+QString Filedb::readFile(const QString &folder, const QString &file)
 {
     QString folderPath = QString("%1/%2").arg(basePath, folder);
     QString notesPath = QDir(folderPath).filePath(file);
@@ -68,19 +56,15 @@ QString Filedb::readFile(QString folder, QString file)
     return content;
 }
 
-QString Filedb::getFileTitle(QString folder, QString file)
+QString Filedb::getFileTitle(const QString &folder, const QString &file)
 {
-    // Returns the title of minimum length of 50 characters
     const int MAX_TITLE_LEN = 50;
-
-    // QString
     QString content = readFile(folder, file);
     QTextDocument document;
     document.setHtml(content);
     content = document.toPlainText();
 
     QStringList lines = content.split("\n");
-
     for (const QString &line : lines)
     {
         QString stripped = line.trimmed();
@@ -99,18 +83,22 @@ QString Filedb::getFileTitle(QString folder, QString file)
     return content;
 }
 
-QString Filedb::createNewNote(QString folder)
+// Folder operations
+QStringList Filedb::listFolders()
 {
-    QDateTime currDate = QDateTime::currentDateTime();
-    qint64 timestamp = currDate.toMSecsSinceEpoch();
-    QString filename = QString::number(timestamp);
-    filename.append(".html");
-
-    writeContentToFile(folder, filename, "");
-    return filename;
+    QString ntermFolder = getOrCreateNotesDir();
+    QDir ntermDir(ntermFolder);
+    return ntermDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Time);
 }
 
-QString Filedb::createFolder(QString folder)
+QStringList Filedb::listNotes(const QString &folder)
+{
+    QString notesDirPath = QString("%1/%2").arg(getOrCreateNotesDir(), folder);
+    QDir notesDir(notesDirPath);
+    return notesDir.entryList(QStringList() << "*.html", QDir::Files, QDir::Time);
+}
+
+QString Filedb::createFolder(const QString &folder)
 {
     QString folderName = folder;
     QString folderPath = QDir(basePath).filePath(folderName);
@@ -129,7 +117,7 @@ QString Filedb::createFolder(QString folder)
     return folderName;
 }
 
-bool Filedb::renameFolder(QString oldName, QString newName)
+bool Filedb::renameFolder(const QString &oldName, const QString &newName)
 {
     QString oldFolderPath = QDir(basePath).filePath(oldName);
     QString newFolderPath = QDir(basePath).filePath(newName);
@@ -142,11 +130,33 @@ bool Filedb::renameFolder(QString oldName, QString newName)
         return false;
     }
 
-    oldDir.rename(oldFolderPath, newFolderPath);
-    return true;
+    return oldDir.rename(oldFolderPath, newFolderPath);
 }
 
-void Filedb::deleteFile(QString folder, QString file)
+void Filedb::deleteFolder(const QString &folder)
+{
+    QString folderPath = QString("%1/%2").arg(basePath, folder);
+    QDir dir(folderPath);
+    dir.removeRecursively();
+}
+
+bool Filedb::isEmpty(const QString &folder)
+{
+    return listNotes(folder).empty();
+}
+
+// Note operations
+QString Filedb::createNewNote(const QString &folder)
+{
+    QDateTime currDate = QDateTime::currentDateTime();
+    qint64 timestamp = currDate.toMSecsSinceEpoch();
+    QString filename = QString::number(timestamp) + ".html";
+
+    writeContentToFile(folder, filename, "");
+    return filename;
+}
+
+void Filedb::deleteFile(const QString &folder, const QString &file)
 {
     QString folderPath = QString("%1/%2").arg(basePath, folder);
     QFile fileObj(QDir(folderPath).filePath(file));
@@ -155,17 +165,4 @@ void Filedb::deleteFile(QString folder, QString file)
     {
         fileObj.remove();
     }
-}
-
-bool Filedb::isEmpty(QString folder)
-{
-    QStringList notes = listNotes(folder);
-    return notes.empty();
-}
-
-void Filedb::deleteFolder(QString folder)
-{
-    QString folderPath = QString("%1/%2").arg(basePath, folder);
-    QDir dir(folderPath);
-    dir.removeRecursively();
 }

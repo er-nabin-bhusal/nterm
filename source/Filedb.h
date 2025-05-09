@@ -1,7 +1,14 @@
 #ifndef FILEDB_H
 #define FILEDB_H
 
-#include <QtQml>
+#include <QString>
+#include <QStringList>
+#include <QDir>
+#include <QFile>
+#include <QTextStream>
+#include <QDateTime>
+#include <QTextDocument>
+#include <QStandardPaths>
 
 class Filedb
 {
@@ -11,17 +18,23 @@ private:
 
 public:
     Filedb();
-    void writeContentToFile(QString folder, QString file, QString content);
-    QStringList listNotes(QString folder);
+
+    // File operations
+    void writeContentToFile(const QString &folder, const QString &file, const QString &content);
+    QString readFile(const QString &folder, const QString &file);
+    QString getFileTitle(const QString &folder, const QString &file);
+
+    // Folder operations
     QStringList listFolders();
-    QString getFileTitle(QString folder, QString file);
-    QString createFolder(QString folder);
-    bool renameFolder(QString oldName, QString newName);
-    QString createNewNote(QString folder);
-    void deleteFolder(QString folder);
-    QString readFile(QString folder, QString file);
-    void deleteFile(QString folder, QString file);
-    bool isEmpty(QString folder);
+    QStringList listNotes(const QString &folder);
+    QString createFolder(const QString &folder);
+    bool renameFolder(const QString &oldName, const QString &newName);
+    void deleteFolder(const QString &folder);
+    bool isEmpty(const QString &folder);
+
+    // Note operations
+    QString createNewNote(const QString &folder);
+    void deleteFile(const QString &folder, const QString &file);
 };
 
 #endif // FILEDB_H

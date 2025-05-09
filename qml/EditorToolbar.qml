@@ -13,44 +13,44 @@ Rectangle {
 
         EditorBtn {
             Layout.leftMargin: 10
-            iconSource: eventHandler.textFormat.paragraph ? "qrc:/assets/icons/paragraphActive.svg": "qrc:/assets/icons/paragraph.svg"
+            iconSource: (eventHandler && eventHandler.textFormat && eventHandler.textFormat.paragraph) ? "qrc:/assets/icons/paragraphActive.svg": "qrc:/assets/icons/paragraph.svg"
             onClicked: () => {
-                eventHandler.handleParagraphClick();
+                if (eventHandler) eventHandler.handleParagraphClick();
             }
         }
 
         EditorBtn {
-            iconSource: eventHandler.textFormat.heading ? "qrc:/assets/icons/headingActive.svg" : "qrc:/assets/icons/heading.svg"
+            iconSource: (eventHandler && eventHandler.textFormat && eventHandler.textFormat.heading) ? "qrc:/assets/icons/headingActive.svg" : "qrc:/assets/icons/heading.svg"
             onClicked: () => {
-                eventHandler.handleHeadingClick();
+                if (eventHandler) eventHandler.handleHeadingClick();
             }
         }
 
         EditorBtn {
-            iconSource: eventHandler.textFormat.bold ? "qrc:/assets/icons/boldActive.svg" : "qrc:/assets/icons/bold.svg"
+            iconSource: (eventHandler && eventHandler.textFormat && eventHandler.textFormat.bold) ? "qrc:/assets/icons/boldActive.svg" : "qrc:/assets/icons/bold.svg"
             onClicked: () => {
-                eventHandler.handleBoldClick();
+                if (eventHandler) eventHandler.handleBoldClick();
             }
         }
 
         EditorBtn {
-            iconSource: eventHandler.textFormat.italic ? "qrc:/assets/icons/italicActive.svg" : "qrc:/assets/icons/italic.svg"
+            iconSource: (eventHandler && eventHandler.textFormat && eventHandler.textFormat.italic) ? "qrc:/assets/icons/italicActive.svg" : "qrc:/assets/icons/italic.svg"
             onClicked: () => {
-                eventHandler.handleItalicClick();
+                if (eventHandler) eventHandler.handleItalicClick();
             }
         }
 
         EditorBtn {
-            iconSource: eventHandler.textFormat.underline ? "qrc:/assets/icons/underlineActive.svg" : "qrc:/assets/icons/underline.svg"
+            iconSource: (eventHandler && eventHandler.textFormat && eventHandler.textFormat.underline) ? "qrc:/assets/icons/underlineActive.svg" : "qrc:/assets/icons/underline.svg"
             onClicked: () => {
-                eventHandler.handleUnderlineClick();
+                if (eventHandler) eventHandler.handleUnderlineClick();
             }
         }
 
         EditorBtn {
-            iconSource: eventHandler.textFormat.codeBlock ? "qrc:/assets/icons/codeBlockActive.svg" : "qrc:/assets/icons/codeBlock.svg"
+            iconSource: (eventHandler && eventHandler.textFormat && eventHandler.textFormat.codeBlock) ? "qrc:/assets/icons/codeBlockActive.svg" : "qrc:/assets/icons/codeBlock.svg"
             onClicked: () => {
-                eventHandler.handleCodeBlockClick();
+                if (eventHandler) eventHandler.handleCodeBlockClick();
             }
         }
 

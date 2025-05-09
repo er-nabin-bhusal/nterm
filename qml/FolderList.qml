@@ -88,14 +88,14 @@ ColumnLayout {
         ListView {
             id: folderList
             anchors.fill: parent
-            model: eventHandler.allFolders
+            model: eventHandler ? eventHandler.allFolders : []
             focus: true
             clip: true
             spacing: 1
 
             delegate: Rectangle {
                 id: folderRect
-                color: (eventHandler.currentFolder === modelData.folderName) ? "#C0C0C0" : "transparent"
+                color: (eventHandler && eventHandler.currentFolder === modelData.folderName) ? "#C0C0C0" : "transparent"
                 implicitHeight: 40
                 anchors {
                     left: parent.left
