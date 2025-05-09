@@ -6,6 +6,7 @@
 #include "source/Filedb.h"
 #include "source/PopupHandler.h"
 #include "source/Constants.h"
+#include "source/TextFormatConfig.h"
 
 EventHandler::EventHandler(QObject *parent) : QObject(parent)
 {
@@ -16,7 +17,11 @@ EventHandler::EventHandler(QObject *parent) : QObject(parent)
 
     reloadNotes();
 
-    // initialize the textFormat
+    initializeTextFormat();
+}
+
+void EventHandler::initializeTextFormat()
+{
     this->textformat["heading"] = false;
     this->textformat["bold"] = false;
     this->textformat["underline"] = false;
@@ -141,8 +146,8 @@ void EventHandler::setNormalText()
     QTextCursor cursor = textCursor();
     QTextCharFormat format;
     format.setFontWeight(QFont::Normal);
-    format.setFontPointSize(14);
-    format.setFontFamilies(QStringList("Inter"));
+    format.setFontPointSize(TextFormatConfig::NORMAL_FONT_SIZE);
+    format.setFontFamilies(QStringList(TextFormatConfig::DEFAULT_FONT_FAMILY));
     cursor.mergeCharFormat(format);
 
     if (!hasSelection())
@@ -157,8 +162,8 @@ void EventHandler::setBlockToNormal()
     cursor.select(QTextCursor::BlockUnderCursor);
     QTextCharFormat format;
     format.setFontWeight(QFont::Normal);
-    format.setFontPointSize(14);
-    format.setFontFamilies(QStringList("Inter"));
+    format.setFontPointSize(TextFormatConfig::NORMAL_FONT_SIZE);
+    format.setFontFamilies(QStringList(TextFormatConfig::DEFAULT_FONT_FAMILY));
     cursor.mergeCharFormat(format);
 
     if (!hasSelection())
@@ -172,7 +177,7 @@ void EventHandler::handleHeadingClick()
 {
     QTextCursor cursor = textCursor();
     cursor.select(QTextCursor::BlockUnderCursor);
-    bool isHeading = (cursor.charFormat().fontPointSize() == 24);
+    bool isHeading = (cursor.charFormat().fontPointSize() == TextFormatConfig::HEADING_FONT_SIZE);
 
     if (isHeading)
     {
@@ -182,8 +187,8 @@ void EventHandler::handleHeadingClick()
     {
         QTextCharFormat format;
         format.setFontWeight(QFont::Bold);
-        format.setFontPointSize(24);
-        format.setFontFamilies(QStringList("Inter 24pt Black"));
+        format.setFontPointSize(TextFormatConfig::HEADING_FONT_SIZE);
+        format.setFontFamilies(QStringList(TextFormatConfig::HEADING_FONT_FAMILY));
         cursor.mergeCharFormat(format);
 
         if (!hasSelection())
@@ -265,20 +270,20 @@ void EventHandler::handleCodeBlockClick()
 {
     QTextCursor cursor = textCursor();
     QTextBlockFormat blockFormat;
-    blockFormat.setLeftMargin(10);
-    blockFormat.setRightMargin(10);
-    blockFormat.setBackground(QBrush(QColor("#e0e0e0"))); // Slightly darker gray background for code block
+    blockFormat.setLeftMargin(TextFormatConfig::CODE_BLOCK_LEFT_MARGIN);
+    blockFormat.setRightMargin(TextFormatConfig::CODE_BLOCK_RIGHT_MARGIN);
+    blockFormat.setBackground(QBrush(QColor(TextFormatConfig::CODE_BLOCK_BACKGROUND)));
     cursor.mergeBlockFormat(blockFormat);
 
     QTextCharFormat charFormat;
-    charFormat.setFontFamily("Courier New"); // Use a monospaced font for code
-    charFormat.setFontPointSize(15);
-    charFormat.setForeground(QBrush(QColor(Qt::black))); // Black text color for code
+    charFormat.setFontFamily(TextFormatConfig::CODE_FONT_FAMILY);
+    charFormat.setFontPointSize(TextFormatConfig::CODE_FONT_SIZE);
+    charFormat.setForeground(QBrush(QColor(TextFormatConfig::CODE_TEXT_COLOR)));
     cursor.mergeCharFormat(charFormat);
 
     if (!hasSelection())
     {
-        cursor.insertText("Enter your code here...");
+        cursor.insertText(TextFormatConfig::DEFAULT_CODE_BLOCK_TEXT);
     }
 }
 
@@ -293,11 +298,11 @@ void EventHandler::createNewNote()
     setCurrentFile(filename);
 
     QVariantMap variant;
-    variant["title"] = "Start with the Title...";
+    variant["title"] = TextFormatConfig::DEFAULT_NOTE_TITLE;
     variant["fileName"] = filename;
     allnotes.insert(0, variant);
 
-    textDocument->textDocument()->setPlainText("Start with the Title...");
+    textDocument->textDocument()->setPlainText(TextFormatConfig::DEFAULT_NOTE_TITLE);
     handleHeadingClick();
     saveContentToFile();
 

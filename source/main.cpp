@@ -6,7 +6,8 @@
 #include "source/PopupHandler.h"
 #include "source/Constants.h"
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
     QGuiApplication app(argc, argv);
     app.setWindowIcon(QIcon("nterm/assets/logo.png"));
 
@@ -24,7 +25,6 @@ int main(int argc, char *argv[]) {
     rootContext->setContextProperty("eventHandler", &eventHandler);
     rootContext->setContextProperty("popupHandler", PopupHandler::instance());
     rootContext->setContextProperty("constants", Constants::instance());
-
 
     QObject::connect(
         &engine,
