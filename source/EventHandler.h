@@ -80,6 +80,7 @@ public:
     Q_INVOKABLE void deleteNote(int noteIndex);
     Q_INVOKABLE void deleteFolder(int index);
     Q_INVOKABLE bool renameFolder(int index, QString folderName);
+    Q_INVOKABLE void emptyTrash();
 
     // Search Operations
     Q_INVOKABLE void onSearchTextChange(const QString &searchText);

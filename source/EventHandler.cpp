@@ -344,6 +344,14 @@ bool EventHandler::renameFolder(int index, QString folderName)
     return res;
 }
 
+void EventHandler::emptyTrash()
+{
+    filedb.deleteAllFilesFromFolder("Trash");
+    setCurrentFile(NULL);
+    reloadNotes();
+    emit allNotesChanged();
+}
+
 void EventHandler::saveContentToFile()
 {
     if (currentfile.isNull() || currentfolder.isNull())
@@ -403,7 +411,7 @@ void EventHandler::deleteNote(int noteIndex)
     QVariantMap map = note.toMap();
     QString fileName = map.value("fileName").toString();
 
-    filedb.deleteFile(currentfolder, fileName);
+    filedb.deleteNoteFile(currentfolder, fileName);
     if (currentfile == fileName)
         setCurrentFile(NULL);
     allnotes.removeAt(noteIndex);

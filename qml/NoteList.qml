@@ -16,10 +16,14 @@ ColumnLayout {
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
             anchors.rightMargin: 10
-            iconSource: "qrc:/assets/icons/addNote.svg"
+            iconSource: eventHandler && eventHandler.currentFolder === "Trash" ? "qrc:/assets/icons/emptyTrash.svg" : "qrc:/assets/icons/addNote.svg"
 
             onClicked: {
-                eventHandler.createNewNote();
+                if (eventHandler && eventHandler.currentFolder === "Trash") {
+                    eventHandler.emptyTrash();
+                } else {
+                    eventHandler.createNewNote();
+                }
             }
         }
     }
@@ -35,6 +39,14 @@ ColumnLayout {
             focus: true
             clip: true
             spacing: 1
+
+            Label {
+                anchors.centerIn: parent
+                text: "Oops! All Empty"
+                visible: noteListView.count === 0
+                color: "#808080"
+                font.pixelSize: 14
+            }
 
             delegate: Rectangle {
                 color: (noteListView.currentIndex === index && eventHandler && eventHandler.currentFile) ? "#C0C0C0" : "transparent"

@@ -4,6 +4,7 @@ import QtQuick
 Rectangle {
     property string label
     property string iconSource
+    property bool disabled
 
     signal clicked()
     radius: 5
@@ -28,9 +29,10 @@ Rectangle {
         id: mouseArea
         hoverEnabled: true
         anchors.fill: parent
+        enabled: !parent.disabled
         onClicked: () => parent.clicked()
-        cursorShape: Qt.PointingHandCursor
-        onEntered: parent.color = "lightgray"
-        onExited: parent.color = "transparent"
+        cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+        onEntered: if (enabled) parent.color = "lightgray"
+        onExited: if (enabled) parent.color = "transparent"
     }
 }

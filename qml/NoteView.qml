@@ -22,7 +22,6 @@ SplitView {
     }
     Rectangle {
         SplitView.fillWidth: true
-
         EditorToolbar {
             id: toolbar
             width: parent.width
@@ -49,7 +48,7 @@ SplitView {
                 selectedTextColor: constants.textSelectedColor
                 textFormat: TextEdit.AutoText
                 wrapMode: Text.Wrap
-                readOnly: !(eventHandler && eventHandler.currentFile)
+                readOnly: !eventHandler || !eventHandler.currentFile || eventHandler.currentFolder === "Trash"
                 font.pointSize: 14
                 focus: true
 

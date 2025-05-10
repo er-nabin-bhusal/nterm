@@ -18,5 +18,6 @@
         <file>assets/icons/search.svg</file>
         <file>assets/icons/close.svg</file>
         <file>assets/icons/trash.svg</file>
+        <file>assets/icons/emptyTrash.svg</file>
     </qresource>
 </RCC>

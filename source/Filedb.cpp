@@ -8,10 +8,14 @@
 
 Filedb::Filedb()
 {
-    basePath = getOrCreateNotesDir();
+    basePath = getOrCreateNtermDir();
+    QStringList allFolders = listFolders(true);
+
+    if (!allFolders.contains("Trash"))
+        createFolder("Trash");
 }
 
-QString Filedb::getOrCreateNotesDir()
+QString Filedb::getOrCreateNtermDir()
 {
     QString homeDirPath = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
     QString notesDirPath = QDir(homeDirPath).filePath("nterm");
@@ -84,16 +88,21 @@ QString Filedb::getFileTitle(const QString &folder, const QString &file)
 }
 
 // Folder operations
-QStringList Filedb::listFolders()
+QStringList Filedb::listFolders(bool includeTrash)
 {
-    QString ntermFolder = getOrCreateNotesDir();
+    QString ntermFolder = getOrCreateNtermDir();
     QDir ntermDir(ntermFolder);
-    return ntermDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Time);
+    QStringList folders = ntermDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Time);
+    if (!includeTrash)
+    {
+        folders.removeAll("Trash");
+    }
+    return folders;
 }
 
 QStringList Filedb::listNotes(const QString &folder)
 {
-    QString notesDirPath = QString("%1/%2").arg(getOrCreateNotesDir(), folder);
+    QString notesDirPath = QString("%1/%2").arg(getOrCreateNtermDir(), folder);
     QDir notesDir(notesDirPath);
     return notesDir.entryList(QStringList() << "*.html", QDir::Files, QDir::Time);
 }
@@ -140,6 +149,23 @@ void Filedb::deleteFolder(const QString &folder)
     dir.removeRecursively();
 }
 
+void Filedb::deleteAllFilesFromFolder(const QString &folder)
+{
+    QString folderPath = QDir(basePath).filePath(folder);
+    QDir folderDir(folderPath);
+
+    if (folderDir.exists())
+    {
+        QStringList files = folderDir.entryList(QDir::Files);
+        for (const QString &file : files)
+        {
+            QString filePath = folderDir.filePath(file);
+            QFile fileObj(filePath);
+            fileObj.remove();
+        }
+    }
+}
+
 bool Filedb::isEmpty(const QString &folder)
 {
     return listNotes(folder).empty();
@@ -156,13 +182,41 @@ QString Filedb::createNewNote(const QString &folder)
     return filename;
 }
 
-void Filedb::deleteFile(const QString &folder, const QString &file)
+void Filedb::moveNoteToTrash(const QString &sourceFolder, const QString &file)
 {
-    QString folderPath = QString("%1/%2").arg(basePath, folder);
-    QFile fileObj(QDir(folderPath).filePath(file));
+    /**
+     * Moves a note to the Trash folder, replacing any existing file with the same name
+     */
+    QString sourcePath = QDir(QDir(basePath).filePath(sourceFolder)).filePath(file);
+    QString destPath = QDir(QDir(basePath).filePath("Trash")).filePath(file);
 
-    if (fileObj.exists())
+    if (QFile::exists(destPath))
     {
-        fileObj.remove();
+        QFile destFile(destPath);
+        destFile.remove();
+    }
+
+    QFile::rename(sourcePath, destPath);
+}
+
+/**
+ * Deletes a note file or moves it to trash
+ * If the note is already in Trash, permanently deletes it
+ * Otherwise, moves the note to the Trash folder
+ */
+void Filedb::deleteNoteFile(const QString &folder, const QString &file)
+{
+    if (folder == "Trash")
+    {
+        QString filePath = QDir(QDir(basePath).filePath(folder)).filePath(file);
+        QFile fileObj(filePath);
+        if (fileObj.exists())
+        {
+            fileObj.remove();
+        }
+    }
+    else
+    {
+        moveNoteToTrash(folder, file);
     }
 }

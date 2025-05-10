@@ -14,7 +14,7 @@ class Filedb
 {
 private:
     QString basePath;
-    QString getOrCreateNotesDir();
+    QString getOrCreateNtermDir();
 
 public:
     Filedb();
@@ -25,16 +25,18 @@ public:
     QString getFileTitle(const QString &folder, const QString &file);
 
     // Folder operations
-    QStringList listFolders();
+    QStringList listFolders(bool includeTrash = false);
     QStringList listNotes(const QString &folder);
     QString createFolder(const QString &folder);
     bool renameFolder(const QString &oldName, const QString &newName);
     void deleteFolder(const QString &folder);
     bool isEmpty(const QString &folder);
+    void deleteAllFilesFromFolder(const QString &folder);
 
     // Note operations
     QString createNewNote(const QString &folder);
-    void deleteFile(const QString &folder, const QString &file);
+    void deleteNoteFile(const QString &folder, const QString &file);
+    void moveNoteToTrash(const QString &sourceFolder, const QString &file);
 };
 
 #endif // FILEDB_H
