@@ -276,7 +276,7 @@ void EventHandler::handleCodeBlockClick()
     cursor.mergeBlockFormat(blockFormat);
 
     QTextCharFormat charFormat;
-    charFormat.setFontFamily(TextFormatConfig::CODE_FONT_FAMILY);
+    charFormat.setFontFamilies(QStringList{TextFormatConfig::CODE_FONT_FAMILY});
     charFormat.setFontPointSize(TextFormatConfig::CODE_FONT_SIZE);
     charFormat.setForeground(QBrush(QColor(TextFormatConfig::CODE_TEXT_COLOR)));
     cursor.mergeCharFormat(charFormat);

@@ -82,7 +82,7 @@ ColumnLayout {
 
     Rectangle {
         color: "transparent"
-        Layout.preferredHeight: parent.height
+        Layout.preferredHeight: parent.height - 105
         Layout.preferredWidth: parent.width
 
         ListView {
@@ -209,6 +209,44 @@ ColumnLayout {
                         });
                     }
                 }
+            }
+        }
+    }
+    // Trash section
+    Rectangle {
+        id: trashSection
+        Layout.alignment: Qt.AlignBottom
+        Layout.preferredHeight: 50
+        Layout.preferredWidth: parent.width
+        color: (eventHandler && eventHandler.currentFolder === "Trash") ? "#C0C0C0" : "transparent"
+
+        Image {
+            id: trashIcon
+            source: "qrc:/assets/icons/trash.svg"
+            width: 24
+            height: 24
+            anchors.left: parent.left
+            anchors.leftMargin: 10
+            anchors.verticalCenter: parent.verticalCenter
+            fillMode: Image.PreserveAspectFit
+            mipmap: true
+        }
+
+        Text {
+            id: trashText
+            text: "Trash"
+            color: "#000000"  // Explicit black color
+            font.pixelSize: 16
+            anchors.left: trashIcon.right
+            anchors.right: parent.right
+            anchors.leftMargin: 10
+            anchors.verticalCenter: parent.verticalCenter
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {
+                eventHandler.setCurrentFolder("Trash");
             }
         }
     }
