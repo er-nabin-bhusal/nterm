@@ -2,15 +2,15 @@ cmake_minimum_required(VERSION 3.16)
 
 project(nterm VERSION 0.1 LANGUAGES CXX)
 
-set(CMAKE_PREFIX_PATH "/home/nihshreyas/Qt/6.7.3/gcc_64")
+set(CMAKE_PREFIX_PATH "/home/nihshreyas/Qt/6.8.3/gcc_64")
 
 set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 6.5 REQUIRED COMPONENTS Quick Widgets)
+find_package(Qt6 6.8 REQUIRED COMPONENTS Quick Widgets)
 
-qt_standard_project_setup(REQUIRES 6.5)
+qt_standard_project_setup(REQUIRES 6.8)
 
 qt_add_executable(appnterm
     source/main.cpp
@@ -28,12 +28,15 @@ qt_add_qml_module(appnterm
         qml/FolderList.qml
         qml/NoteList.qml
         qml/EditorToolbar.qml
-
+        qml/FloatingButton.qml
+        qml/editor/Editor.qml
+        qml/editor/EditorItem.qml
     SOURCES
         source/EventHandler.h source/EventHandler.cpp
         source/Filedb.h source/Filedb.cpp
         source/PopupHandler.h source/PopupHandler.cpp
         source/Constants.h source/Constants.cpp
+        source/Editor.h source/Editor.cpp
 
     RESOURCES
         assets/logo.png

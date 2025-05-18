@@ -5,6 +5,7 @@
 #include "source/EventHandler.h"
 #include "source/PopupHandler.h"
 #include "source/Constants.h"
+#include "source/Editor.h"
 
 int main(int argc, char *argv[])
 {
@@ -20,6 +21,9 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
     EventHandler eventHandler;
     Constants constants;
+
+    // Register CustomTextEdit
+    qmlRegisterType<Editor>("NTerm", 1, 0, "Editor");
 
     QQmlContext *rootContext = engine.rootContext();
     rootContext->setContextProperty("eventHandler", &eventHandler);
