@@ -49,8 +49,9 @@ Page {
                         anchors.fill: parent
                         onClicked: editor.onClicked()
                     }
+
                     Keys.onPressed: function(event) {
-                        editor.onKeyPressed(event.text)
+                        editor.onKeyPressed(event.text, currentIndex)
                         event.accepted = true
                     }
 

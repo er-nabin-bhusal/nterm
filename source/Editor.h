@@ -13,14 +13,14 @@ private:
 
     int m_currentIndex = 0;
     bool isEditing = false;
-    void updateLines(const QString &text);
+    void updateLines(const QString &text, const int &index);
 
 signals:
     void linesChanged();
 
 public:
     Q_INVOKABLE void onClicked();
-    Q_INVOKABLE void onKeyPressed(const QString &text);
+    Q_INVOKABLE void onKeyPressed(const QString &text, const int &index);
 
     QList<QVariantMap> lines() const { return m_lines; }
     explicit Editor(QQuickItem *parent = nullptr);

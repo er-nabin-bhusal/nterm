@@ -25,16 +25,16 @@ Rectangle {
         color: parent.fontColor
         anchors.left: parent.left
     }
-
+    
     Rectangle {
+        id: cursor
         visible: true
-        width: 4
-        height: 20
+        width: 2
+        height: lineText.height
         color: "#000000"
         opacity: 1.0
-        z: 1000
-        anchors.right: lineText.right
-        anchors.verticalCenter: lineText.verticalCenter
+        x: lineText.x + lineText.width + 2
+        y: lineText.y + lineText.height / 2 - height / 2
        
 
         Timer {

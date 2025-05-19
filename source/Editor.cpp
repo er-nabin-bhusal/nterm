@@ -5,25 +5,41 @@ Editor::Editor(QQuickItem *parent) : QQuickItem(parent)
 {
     // Initialize with a default line
     QVariantMap initialLine;
-    initialLine["text"] = "|";
+    initialLine["text"] = "";
     initialLine["index"] = 0;
 
     m_lines.append(initialLine);
 }
 
-void Editor::updateLines(const QString &text)
+void Editor::updateLines(const QString &text, const int &index)
 {
+    // Handle backspace/delete
     if (text == "\b" || text == "\177")
     {
-        QString currentText = m_lines.last()["text"].toString();
-        currentText.chop(1);
-        m_lines.last()["text"] = currentText;
-    }
-    else
-    {
-        m_lines.last()["text"] = m_lines.last()["text"].toString() + text;
+        QString currentText = m_lines[index]["text"].toString();
+        if (!currentText.isEmpty())
+        {
+            currentText.chop(1);
+            m_lines[index]["text"] = currentText;
+        }
+        emit linesChanged();
+        return;
     }
 
+    // Handle newline
+    if (text == "\r" || text == "\n")
+    {
+        QVariantMap newLine;
+        newLine["text"] = "";
+        newLine["index"] = m_lines.size();
+        m_lines.append(newLine);
+        emit linesChanged();
+        return;
+    }
+
+    // Handle regular text input
+    QString currentText = m_lines[index]["text"].toString();
+    m_lines[index]["text"] = currentText + text;
     emit linesChanged();
 }
 
@@ -39,11 +55,11 @@ void Editor::onClicked()
     this->isEditing = true;
 }
 
-void Editor::onKeyPressed(const QString &text)
+void Editor::onKeyPressed(const QString &text, const int &index)
 {
     if (this->isEditing)
     {
-        updateLines(text);
+        updateLines(text, index);
     }
 }
 
