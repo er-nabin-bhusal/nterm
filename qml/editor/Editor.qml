@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import NTerm 1.0
 
 Page {
     id: root
@@ -9,15 +8,14 @@ Page {
         color: "#ffffff"
     }
 
+    Component.onCompleted: {
+        blockLayoutEngineCtx.initializeSampleData();
+    }
+
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 16
         spacing: 16
-
-        Button {
-            text: "← Back"
-            onClicked: stackView.pop()
-        }
 
         Label {
             text: "New Note"
@@ -29,43 +27,29 @@ Page {
         Rectangle {
             Layout.fillWidth: true
             Layout.fillHeight: true
+            color: "#f5f5f5"
             border.color: "#cccccc"
             border.width: 1
-            radius: 4
 
-            Rectangle {
-                anchors.fill: parent
-                anchors.margins: 8
-                color: "#f5f5f5"  // Light gray background
-
-                Editor { id: editor }
-
-                ListView {
-                    anchors.fill: parent
-                    model: editor.lines
-                    focus: true
-
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: editor.onClicked()
-                    }
-
-                    Keys.onPressed: function(event) {
-                        editor.onKeyPressed(event.text, currentIndex)
-                        event.accepted = true
-                    }
-
-                    delegate: EditorItem {
-                        index: index
-                        text: modelData.text
-                        fontSize: 16
-                        fontWeight: 500
-                        fontColor: "#333333"
-                        backgroundColor: "#ffffff"
-                        borderColor: "#cccccc"
-                        borderWidth: 1
-                        borderRadius: 4
-                        padding: 8
+            Column {
+                id: blocksContainer
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.margins: 16
+                
+                onWidthChanged: {
+                    blockLayoutEngineCtx.availableWidth = width;
+                }
+                
+                Repeater {
+                    id: blocksRepeater
+                    model: blockLayoutEngineCtx ? blockLayoutEngineCtx.blocks : []
+                    
+                    Block {
+                        blockData: modelData
+                        blockIndex: index
+                        width: parent.width
                     }
                 }
             }

@@ -62,14 +62,6 @@ Rectangle {
             }
         }
 
-        EditorBtn {
-            disabled: toolbar.disabled
-            iconSource: (eventHandler && eventHandler.textFormat && eventHandler.textFormat.codeBlock) ? "qrc:/assets/icons/codeBlockActive.svg" : "qrc:/assets/icons/codeBlock.svg"
-            onClicked: () => {
-                if (eventHandler) eventHandler.handleCodeBlockClick();
-            }
-        }
-
         Rectangle { Layout.fillWidth: true }
     }
 

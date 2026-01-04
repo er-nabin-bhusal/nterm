@@ -70,7 +70,6 @@ public:
     Q_INVOKABLE void handleHeadingClick();
     Q_INVOKABLE void handleItalicClick();
     Q_INVOKABLE void handleUnderlineClick();
-    Q_INVOKABLE void handleCodeBlockClick();
     Q_INVOKABLE void handleParagraphClick();
 
     // File Operations

@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.16)
 
 project(nterm VERSION 0.1 LANGUAGES CXX)
 
+# Generate compile_commands.json for IntelliSense
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 set(CMAKE_PREFIX_PATH "/home/nihshreyas/Qt/6.8.3/gcc_64")
 
 set(CMAKE_AUTORCC ON)
@@ -30,13 +33,17 @@ qt_add_qml_module(appnterm
         qml/EditorToolbar.qml
         qml/FloatingButton.qml
         qml/editor/Editor.qml
-        qml/editor/EditorItem.qml
+        qml/editor/Bold.qml
+        qml/editor/Normal.qml
+        qml/editor/Block.qml
     SOURCES
         source/EventHandler.h source/EventHandler.cpp
         source/Filedb.h source/Filedb.cpp
         source/PopupHandler.h source/PopupHandler.cpp
         source/Constants.h source/Constants.cpp
-        source/Editor.h source/Editor.cpp
+        source/editor/Node.h source/editor/Node.cpp
+        source/editor/Block.h source/editor/Block.cpp
+        source/editor/BlockLayoutEngine.h source/editor/BlockLayoutEngine.cpp
 
     RESOURCES
         assets/logo.png
@@ -61,6 +68,7 @@ target_link_libraries(appnterm
 )
 target_include_directories(appnterm PRIVATE 
     ${CMAKE_CURRENT_SOURCE_DIR}/source
+    ${CMAKE_CURRENT_SOURCE_DIR}/source/editor
     ${Qt6Quick_INCLUDE_DIRS}
     ${Qt6Widgets_INCLUDE_DIRS}
 )

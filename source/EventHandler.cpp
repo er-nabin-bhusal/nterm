@@ -27,7 +27,6 @@ void EventHandler::initializeTextFormat()
     this->textformat["underline"] = false;
     this->textformat["italic"] = false;
     this->textformat["paragraph"] = true;
-    this->textformat["codeBlock"] = false;
 }
 
 void EventHandler::reloadFolders()
@@ -263,27 +262,6 @@ void EventHandler::handleUnderlineClick()
     if (!hasSelection())
     {
         cursor.insertText(QString(QChar(0x200B)));
-    }
-}
-
-void EventHandler::handleCodeBlockClick()
-{
-    QTextCursor cursor = textCursor();
-    QTextBlockFormat blockFormat;
-    blockFormat.setLeftMargin(TextFormatConfig::CODE_BLOCK_LEFT_MARGIN);
-    blockFormat.setRightMargin(TextFormatConfig::CODE_BLOCK_RIGHT_MARGIN);
-    blockFormat.setBackground(QBrush(QColor(TextFormatConfig::CODE_BLOCK_BACKGROUND)));
-    cursor.mergeBlockFormat(blockFormat);
-
-    QTextCharFormat charFormat;
-    charFormat.setFontFamilies(QStringList{TextFormatConfig::CODE_FONT_FAMILY});
-    charFormat.setFontPointSize(TextFormatConfig::CODE_FONT_SIZE);
-    charFormat.setForeground(QBrush(QColor(TextFormatConfig::CODE_TEXT_COLOR)));
-    cursor.mergeCharFormat(charFormat);
-
-    if (!hasSelection())
-    {
-        cursor.insertText(TextFormatConfig::DEFAULT_CODE_BLOCK_TEXT);
     }
 }
 

@@ -12,36 +12,42 @@ Window {
     StackView {
         id: stackView
         anchors.fill: parent
-        initialItem: mainPage
+        // initialItem: mainPage
+        initialItem: editorPage
     }
 
     Component {
-        id: mainPage
-        Item {
-
-            NoteView {
-                Keys.onPressed: (event) => {
-                    if (event.modifiers & Qt.ControlModifier) {
-                        switch (event.key) {
-                            case Qt.Key_N:
-                                eventHandler.createNewNote();
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                }
-            }
-            FloatingButton {
-                anchors.right: parent.right
-                anchors.bottom: parent.bottom
-                anchors.margins: 20
-                onClicked: {
-                    stackView.push("editor/Editor.qml")
-                }
-            }
-        }
+        id: editorPage
+        Editor {}
     }
+
+    // Component {
+    //     id: mainPage
+    //     Item {
+
+    //         NoteView {
+    //             Keys.onPressed: (event) => {
+    //                 if (event.modifiers & Qt.ControlModifier) {
+    //                     switch (event.key) {
+    //                         case Qt.Key_N:
+    //                             eventHandler.createNewNote();
+    //                             break;
+    //                         default:
+    //                             break;
+    //                     }
+    //                 }
+    //             }
+    //             FloatingButton {
+    //                 anchors.right: parent.right
+    //                 anchors.bottom: parent.bottom
+    //                 anchors.margins: 20
+    //                 onClicked: {
+    //                     stackView.push("editor/Editor.qml")
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
 
     Popup {
         id: errorDialog

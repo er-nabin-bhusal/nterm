@@ -5,7 +5,7 @@
 #include "source/EventHandler.h"
 #include "source/PopupHandler.h"
 #include "source/Constants.h"
-#include "source/Editor.h"
+#include "source/editor/BlockLayoutEngine.h"
 
 int main(int argc, char *argv[])
 {
@@ -21,14 +21,13 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
     EventHandler eventHandler;
     Constants constants;
-
-    // Register CustomTextEdit
-    qmlRegisterType<Editor>("NTerm", 1, 0, "Editor");
+    BlockLayoutEngine blockLayoutEngine;
 
     QQmlContext *rootContext = engine.rootContext();
     rootContext->setContextProperty("eventHandler", &eventHandler);
     rootContext->setContextProperty("popupHandler", PopupHandler::instance());
     rootContext->setContextProperty("constants", Constants::instance());
+    rootContext->setContextProperty("blockLayoutEngineCtx", &blockLayoutEngine);
 
     QObject::connect(
         &engine,

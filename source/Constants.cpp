@@ -1,9 +1,11 @@
 #include "source/Constants.h"
 #include <QObject>
 
-static Constants* instance_ = nullptr;
-Constants* Constants::instance() {
-    if (!instance_) instance_ = new Constants();
+static Constants *instance_ = nullptr;
+Constants *Constants::instance()
+{
+    if (!instance_)
+        instance_ = new Constants();
     return instance_;
 }
 
