@@ -98,7 +98,7 @@ public:
     Q_INVOKABLE void setTextFormat(QVariantMap format);
 
     // Special Operations
-    Q_INVOKABLE bool enterPressed();
+    Q_INVOKABLE bool handleEnterKey();
     Q_INVOKABLE void detectLink();
 
 signals:

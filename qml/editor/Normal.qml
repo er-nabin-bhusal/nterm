@@ -48,6 +48,17 @@ Rectangle {
             }
         }
 
+        Keys.onPressed: function(event) {
+            if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                event.accepted = true;
+                blockLayoutEngineCtx.handleEnterKey(blockIndex, itemIndex, cursorPosition);
+            }
+            if (event.key === Qt.Key_Left || event.key === Qt.Key_Right || 
+                event.key === Qt.Key_Up || event.key === Qt.Key_Down) {
+                blockLayoutEngineCtx.handleArrowKeys(blockIndex, itemIndex, cursorPosition, event.key);
+            }
+        }
+
         Connections {
             target: blockLayoutEngineCtx
             function onCursorPositionChanged(changedBlockIndex, newNodeIndex, newCursorPos) {

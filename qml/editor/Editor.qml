@@ -53,6 +53,13 @@ Page {
                 onWidthChanged: {
                     blockLayoutEngineCtx.availableWidth = width;
                 }
+
+                Connections {
+                    target: blockLayoutEngineCtx
+                    function onBlocksChanged() {
+                        blocksRepeater.model = blockLayoutEngineCtx.blocks;
+                    }
+                }
                 
                 Repeater {
                     id: blocksRepeater

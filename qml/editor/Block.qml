@@ -5,7 +5,7 @@ Item {
     property var blockData: null
     property int blockIndex: -1
     width: parent.width
-    height: flowContent.height
+    height: Math.max(flowContent.height, 16)
     
     MouseArea {
         id: blockMouseArea
@@ -40,9 +40,9 @@ Item {
                 property int itemIndex: index
                 
                 sourceComponent: {
-                    if (modelData.type === "bold") {
+                    if (modelData.typeStr === "bold") {
                         return boldComponent
-                    } else if (modelData.type === "normal") {
+                    } else if (modelData.typeStr === "normal") {
                         return normalComponent
                     }
                     return null

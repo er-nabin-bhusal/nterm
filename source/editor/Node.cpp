@@ -1,11 +1,11 @@
 #include "source/editor/Node.h"
 #include <QFontMetrics>
 
-Node::Node() : m_fontSize(16), m_fontWeight(QFont::Normal), m_width(0.0)
+Node::Node() : m_type(Normal), m_fontSize(16), m_fontWeight(QFont::Normal), m_width(0.0)
 {
 }
 
-Node::Node(const QString &type, const QString &text, int fontSize, int fontWeight, qreal width)
+Node::Node(NodeType type, const QString &text, int fontSize, int fontWeight, qreal width)
     : m_type(type), m_text(text), m_fontSize(fontSize), m_fontWeight(fontWeight), m_width(width)
 {
     m_font = QFont();
@@ -15,14 +15,56 @@ Node::Node(const QString &type, const QString &text, int fontSize, int fontWeigh
     m_width = measureTextWidth(text);
 }
 
-QString Node::type() const
+Node::NodeType Node::type() const
 {
     return m_type;
 }
 
-void Node::setType(const QString &type)
+void Node::setType(NodeType type)
 {
     m_type = type;
+}
+
+QString Node::typeStr() const
+{
+    return typeToString(m_type);
+}
+
+void Node::setTypeStr(const QString &type)
+{
+    m_type = stringToType(type);
+}
+
+QString Node::typeToString(NodeType type)
+{
+    switch (type)
+    {
+    case Normal:
+        return "normal";
+    case Bold:
+        return "bold";
+    case NewLine:
+        return "newLine";
+    default:
+        return "normal";
+    }
+}
+
+Node::NodeType Node::stringToType(const QString &type)
+{
+    if (type == "normal")
+    {
+        return Normal;
+    }
+    else if (type == "bold")
+    {
+        return Bold;
+    }
+    else if (type == "newLine")
+    {
+        return NewLine;
+    }
+    return Normal; // Default fallback
 }
 
 QString Node::text() const

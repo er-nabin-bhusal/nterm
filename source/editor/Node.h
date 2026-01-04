@@ -8,18 +8,33 @@
 class Node
 {
     Q_GADGET
-    Q_PROPERTY(QString type READ type WRITE setType)
+    Q_PROPERTY(QString typeStr READ typeStr WRITE setTypeStr)
     Q_PROPERTY(QString text READ text WRITE setText)
     Q_PROPERTY(int fontSize READ fontSize WRITE setFontSize)
     Q_PROPERTY(int fontWeight READ fontWeight WRITE setFontWeight)
     Q_PROPERTY(qreal width READ width WRITE setWidth)
 
 public:
+    enum NodeType
+    {
+        Normal,
+        Bold,
+        NewLine
+    };
+    Q_ENUM(NodeType)
+
     Node();
     Node(const QString &type, const QString &text, int fontSize, int fontWeight, qreal width);
+    Node(NodeType type, const QString &text, int fontSize, int fontWeight, qreal width);
 
-    QString type() const;
-    void setType(const QString &type);
+    NodeType type() const;
+    void setType(NodeType type);
+    QString typeStr() const;
+    void setTypeStr(const QString &type);
+
+    // Static helper methods for conversion
+    static QString typeToString(NodeType type);
+    static NodeType stringToType(const QString &type);
 
     QString text() const;
     void setText(const QString &text);
@@ -37,7 +52,7 @@ public:
 
 private:
     QFont m_font;
-    QString m_type;
+    NodeType m_type;
     QString m_text;
     int m_fontSize;
     int m_fontWeight;
@@ -46,4 +61,3 @@ private:
 Q_DECLARE_METATYPE(Node)
 
 #endif // NODE_H
-

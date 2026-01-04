@@ -84,7 +84,7 @@ SplitView {
                         }
                     }
                     if (event.key == Qt.Key_Enter || event.key == Qt.Key_Return) {
-                        const response = eventHandler.enterPressed();
+                        const response = eventHandler.handleEnterKey();
                         if (response) { event.accepted = true; }
                     }
                     if (event.key == Qt.Key_Space) {

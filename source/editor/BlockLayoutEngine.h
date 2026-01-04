@@ -29,9 +29,19 @@ public:
     Q_INVOKABLE QVariant getBlock(int blockIndex) const;
     Q_INVOKABLE void setCursorToLastPositionInBlock(int blockIndex);
     Q_INVOKABLE void setCursorToLastPositionInLastBlock();
+    Q_INVOKABLE void handleEnterKey(int blockIndex, int itemIndex, int cursorPosition);
+    Q_INVOKABLE void handleArrowKeys(int blockIndex, int itemIndex, int cursorPosition, int key);
+    void moveCursorLeft(int blockIndex, int itemIndex, int cursorPosition);
+    void moveCursorRight(int blockIndex, int itemIndex, int cursorPosition);
+    void moveCursorUp(int blockIndex, int itemIndex, int cursorPosition);
+    void moveCursorDown(int blockIndex, int itemIndex, int cursorPosition);
 
     // Getters and Setters
-    qreal availableWidth() const { return m_availableWidth; }
+    qreal
+    availableWidth() const
+    {
+        return m_availableWidth;
+    }
     void setAvailableWidth(qreal width);
 
     QVariantList blocks() const

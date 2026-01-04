@@ -421,7 +421,7 @@ void EventHandler::setTextFormat(QVariantMap format) {}
 /**
  * This function is to change the block is the current format is heading.
  **/
-bool EventHandler::enterPressed()
+bool EventHandler::handleEnterKey()
 {
     QTextCursor cursor = this->textCursor();
     bool isHeading = (cursor.charFormat().fontPointSize() == 24);
