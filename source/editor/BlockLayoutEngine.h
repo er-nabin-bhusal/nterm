@@ -27,6 +27,8 @@ public:
 
     Q_INVOKABLE void textChanged(const QString &text, int blockIndex, int itemIndex, int cursorPosition);
     Q_INVOKABLE QVariant getBlock(int blockIndex) const;
+    Q_INVOKABLE void setCursorToLastPositionInBlock(int blockIndex);
+    Q_INVOKABLE void setCursorToLastPositionInLastBlock();
 
     // Getters and Setters
     qreal availableWidth() const { return m_availableWidth; }

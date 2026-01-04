@@ -31,6 +31,18 @@ Page {
             border.color: "#cccccc"
             border.width: 1
 
+            MouseArea {
+                id: editorMouseArea
+                anchors.fill: parent
+                z: -1
+                acceptedButtons: Qt.LeftButton
+                onClicked: function(mouse) {
+                    // This MouseArea is behind blocks, so it only receives clicks on empty space
+                    // Set cursor to last position in last block
+                    blockLayoutEngineCtx.setCursorToLastPositionInLastBlock()
+                }
+            }
+
             Column {
                 id: blocksContainer
                 anchors.top: parent.top

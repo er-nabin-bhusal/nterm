@@ -35,6 +35,17 @@ QPair<int, int> Block::getCursorPositionInBlock(int cursorPositionInBlock) const
     return QPair<int, int>(m_nodes.size() - 1, charCount - m_nodes[m_nodes.size() - 1].text().length());
 }
 
+QPair<int, int> Block::getLastPositionInBlock() const
+{
+    if (m_nodes.isEmpty())
+    {
+        return QPair<int, int>(-1, 0);
+    }
+    int lastItemIndex = m_nodes.size() - 1;
+    int lastCharPosition = m_nodes[lastItemIndex].text().length();
+    return QPair<int, int>(lastItemIndex, lastCharPosition);
+}
+
 void Block::arrangeNodes(qreal availableMaxWidth)
 {
     qreal availableRowWidth = availableMaxWidth - 5;
@@ -157,4 +168,3 @@ int Block::findSplitCharIndex(Node node, qreal widthForFirstNode)
     }
     return left;
 }
-

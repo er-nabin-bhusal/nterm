@@ -20,6 +20,9 @@ public:
     int getTotalCharactersCountTillIndex(int index) const;
 
     QPair<int, int> getCursorPositionInBlock(int cursorPositionInBlock) const;
+    
+    /* Get the last position in the block (last item index, last character position in that item) */
+    QPair<int, int> getLastPositionInBlock() const;
 
     void arrangeNodes(qreal availableMaxWidth);
 

@@ -27,6 +27,28 @@ QVariant BlockLayoutEngine::getBlock(int blockIndex) const
     return QVariant::fromValue(m_blocks[blockIndex]);
 }
 
+void BlockLayoutEngine::setCursorToLastPositionInBlock(int blockIndex)
+{
+    if (blockIndex < 0 || blockIndex >= m_blocks.size())
+        return;
+
+    const Block &block = m_blocks[blockIndex];
+    QPair<int, int> lastPos = block.getLastPositionInBlock();
+    if (lastPos.first >= 0)
+    {
+        emit cursorPositionChanged(blockIndex, lastPos.first, lastPos.second);
+    }
+}
+
+void BlockLayoutEngine::setCursorToLastPositionInLastBlock()
+{
+    if (m_blocks.isEmpty())
+        return;
+
+    int lastBlockIndex = m_blocks.size() - 1;
+    setCursorToLastPositionInBlock(lastBlockIndex);
+}
+
 void BlockLayoutEngine::setAvailableWidth(qreal width)
 {
     if (qFuzzyCompare(m_availableWidth, width))
