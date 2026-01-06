@@ -33,6 +33,7 @@ qt_add_qml_module(appnterm
         qml/EditorToolbar.qml
         qml/FloatingButton.qml
         qml/editor/Editor.qml
+        qml/editor/TextBlockBase.qml
         qml/editor/Bold.qml
         qml/editor/Normal.qml
         qml/editor/Block.qml

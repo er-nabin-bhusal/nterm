@@ -25,6 +25,7 @@ public:
 
     /* Get the last position in the block (last item index, last character position in that item) */
     QPair<int, int> getLastPositionInBlock() const;
+    qreal getTotalWidthOfBlock() const;
 
     void arrangeNodes(qreal availableMaxWidth);
     Block addNewLineNode(int nodeIndex, int cursorPosition);

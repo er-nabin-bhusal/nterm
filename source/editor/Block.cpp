@@ -10,6 +10,16 @@ Block::Block(const QList<Node> &nodes) : m_nodes(nodes)
 {
 }
 
+qreal Block::getTotalWidthOfBlock() const
+{
+    qreal totalWidth = 0.0;
+    for (const Node &node : m_nodes)
+    {
+        totalWidth += node.width();
+    }
+    return totalWidth;
+}
+
 /* Get the total number of characters till the index */
 int Block::getTotalCharactersCountTillIndex(int index) const
 {
@@ -99,9 +109,8 @@ QPair<int, int> Block::getLastPositionInBlock() const
     return QPair<int, int>(lastItemIndex, lastCharPosition);
 }
 
-void Block::arrangeNodes(qreal availableMaxWidth)
+void Block::arrangeNodes(qreal availableRowWidth)
 {
-    qreal availableRowWidth = availableMaxWidth - 5;
     if (m_nodes.isEmpty())
         return;
 
@@ -134,6 +143,11 @@ void Block::arrangeNodes(qreal availableMaxWidth)
             newNodes.append(tempNode);
             tempNode = currentNode;
             break;
+        }
+        if (currentNode.text().isEmpty()) // CRITICAL: it's going to remove the node that doesn't have any text
+        {
+            idx += 1;
+            continue;
         }
         if (tempNode.type() != currentNode.type())
         {

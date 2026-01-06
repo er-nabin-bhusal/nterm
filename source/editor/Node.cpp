@@ -113,3 +113,8 @@ qreal Node::measureTextWidth(const QString &text) const
     QFontMetrics fontMetrics(m_font);
     return fontMetrics.horizontalAdvance(text);
 }
+
+bool Node::canBeInSameBlock(const Node &node1, const Node &node2)
+{
+    return node1.fontSize() == node2.fontSize();
+}

@@ -30,6 +30,7 @@ public:
     Q_INVOKABLE void setCursorToLastPositionInBlock(int blockIndex);
     Q_INVOKABLE void setCursorToLastPositionInLastBlock();
     Q_INVOKABLE void handleEnterKey(int blockIndex, int itemIndex, int cursorPosition);
+    Q_INVOKABLE void handleBackspaceKey(int blockIndex, int itemIndex, int cursorPosition);
     Q_INVOKABLE void handleArrowKeys(int blockIndex, int itemIndex, int cursorPosition, int key);
     void moveCursorLeft(int blockIndex, int itemIndex, int cursorPosition);
     void moveCursorRight(int blockIndex, int itemIndex, int cursorPosition);

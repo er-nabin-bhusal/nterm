@@ -32,9 +32,9 @@ public:
     QString typeStr() const;
     void setTypeStr(const QString &type);
 
-    // Static helper methods for conversion
     static QString typeToString(NodeType type);
     static NodeType stringToType(const QString &type);
+    static bool canBeInSameBlock(const Node &node1, const Node &node2);
 
     QString text() const;
     void setText(const QString &text);

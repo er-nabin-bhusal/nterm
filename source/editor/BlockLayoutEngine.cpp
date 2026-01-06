@@ -50,7 +50,6 @@ void BlockLayoutEngine::handleEnterKey(int blockIndex, int itemIndex, int cursor
     Block &block = m_blocks[blockIndex];
     Block newBlock = block.addNewLineNode(itemIndex, cursorPosition);
     m_blocks.insert(blockIndex + 1, newBlock);
-
     emit blocksChanged();
     emit cursorPositionChanged(blockIndex + 1, 0, 0);
 }
@@ -61,28 +60,28 @@ void BlockLayoutEngine::moveCursorLeft(int blockIndex, int itemIndex, int cursor
         return;
 
     Block &block = m_blocks[blockIndex];
-    Node &node = block.nodes()[itemIndex];
     if (itemIndex == 0)
     {
         if (blockIndex > 0)
         {
             Block &prevBlock = m_blocks[blockIndex - 1];
-            Node &prevNode = prevBlock.nodes()[prevBlock.nodes().size() - 1];
-            int i = 2;
-            while (prevNode.type() == Node::NewLine)
+            int nodeIndex = prevBlock.nodes().size() - 1;
+            const Node *prevNode = &prevBlock.nodes()[nodeIndex];
+
+            while (prevNode->type() == Node::NewLine)
             {
-                prevNode = prevBlock.nodes()[prevBlock.nodes().size() - i];
-                i++;
+                nodeIndex -= 1;
+                prevNode = &prevBlock.nodes()[nodeIndex];
             }
-            int prevNodeLength = prevNode.text().length();
-            emit cursorPositionChanged(blockIndex - 1, prevBlock.nodes().size() - 1, prevNode.text().length());
+            int prevNodeLength = prevNode->text().length();
+            emit cursorPositionChanged(blockIndex - 1, nodeIndex, prevNodeLength);
         }
     }
     else
     {
         Node &prevNode = block.nodes()[itemIndex - 1];
         int prevNodeLength = prevNode.text().length();
-        emit cursorPositionChanged(blockIndex, itemIndex - 1, prevNodeLength);
+        emit cursorPositionChanged(blockIndex, itemIndex - 1, prevNodeLength - 1);
     }
 }
 
@@ -102,30 +101,55 @@ void BlockLayoutEngine::moveCursorRight(int blockIndex, int itemIndex, int curso
     {
         if (blockIndex < m_blocks.size() - 1)
         {
-            emit cursorPositionChanged(blockIndex + 1, 0, 0);
+            emit cursorPositionChanged(blockIndex + 1, 0, 1);
         }
     }
     else
     {
-        emit cursorPositionChanged(blockIndex, itemIndex + 1, 0);
+        emit cursorPositionChanged(blockIndex, itemIndex + 1, 1);
     }
 }
 
 void BlockLayoutEngine::moveCursorUp(int blockIndex, int itemIndex, int cursorPosition)
 {
+    qreal widthTillCursor = m_blocks[blockIndex].getTotalWidthTillIndex(itemIndex, cursorPosition);
+    /* Without this correction, it seems that cursor is always moving to the left at each movement */
+    int errorCorrection = int(widthTillCursor / m_availableWidth) * 2;
+
+    if (widthTillCursor > m_availableWidth)
+    {
+        qreal widthAbove = widthTillCursor - m_availableWidth;
+        QPair<int, int> cursorPositionFromWidth = m_blocks[blockIndex].getCursorPositionFromWidth(widthAbove);
+        emit cursorPositionChanged(blockIndex, cursorPositionFromWidth.first, cursorPositionFromWidth.second);
+        return;
+    }
+
     if (blockIndex == 0)
         return;
-    qreal widthTillCursor = m_blocks[blockIndex].getTotalWidthTillIndex(itemIndex, cursorPosition);
-    QPair<int, int> cursorPositionFromWidth = m_blocks[blockIndex - 1].getCursorPositionFromWidth(widthTillCursor);
+    Block &prevBlock = m_blocks[blockIndex - 1];
+    qreal totalWidthOfPrevBlock = prevBlock.getTotalWidthOfBlock();
+    int numberOfRows = int(totalWidthOfPrevBlock / m_availableWidth);
+    errorCorrection = 2 * numberOfRows;
+    QPair<int, int> cursorPositionFromWidth = prevBlock.getCursorPositionFromWidth(widthTillCursor + numberOfRows * m_availableWidth - errorCorrection);
     emit cursorPositionChanged(blockIndex - 1, cursorPositionFromWidth.first, cursorPositionFromWidth.second);
 }
 
 void BlockLayoutEngine::moveCursorDown(int blockIndex, int itemIndex, int cursorPosition)
 {
+    qreal widthTillCursor = m_blocks[blockIndex].getTotalWidthTillIndex(itemIndex, cursorPosition);
+    qreal nextAvailableWidthInBlock = widthTillCursor + m_availableWidth;
+    qreal totalWidthOfBlock = m_blocks[blockIndex].getTotalWidthOfBlock();
+    if (totalWidthOfBlock > nextAvailableWidthInBlock)
+    {
+        QPair<int, int> nextPositionInBlock = m_blocks[blockIndex].getCursorPositionFromWidth(nextAvailableWidthInBlock);
+        emit cursorPositionChanged(blockIndex, nextPositionInBlock.first, nextPositionInBlock.second);
+        return;
+    }
     if (blockIndex == m_blocks.size() - 1)
         return;
-    qreal widthTillCursor = m_blocks[blockIndex].getTotalWidthTillIndex(itemIndex, cursorPosition);
-    QPair<int, int> cursorPositionFromWidth = m_blocks[blockIndex + 1].getCursorPositionFromWidth(widthTillCursor);
+
+    qreal widthTillCursorStartOfRow = widthTillCursor - int(widthTillCursor / m_availableWidth) * m_availableWidth;
+    QPair<int, int> cursorPositionFromWidth = m_blocks[blockIndex + 1].getCursorPositionFromWidth(widthTillCursorStartOfRow);
     emit cursorPositionChanged(blockIndex + 1, cursorPositionFromWidth.first, cursorPositionFromWidth.second);
 }
 
@@ -147,6 +171,39 @@ void BlockLayoutEngine::handleArrowKeys(int blockIndex, int itemIndex, int curso
     {
         moveCursorDown(blockIndex, itemIndex, cursorPosition);
     }
+}
+
+void BlockLayoutEngine::handleBackspaceKey(int blockIndex, int itemIndex, int cursorPosition)
+{
+    if (blockIndex <= 0 || itemIndex > 0 || cursorPosition > 0)
+    {
+        return;
+    }
+    Block &currentBlock = m_blocks[blockIndex];
+    Block &prevBlock = m_blocks[blockIndex - 1];
+    Node *lastItemInPrevBlock = &prevBlock.nodes()[prevBlock.nodes().size() - 1];
+    if (lastItemInPrevBlock->type() == Node::NewLine)
+    {
+        prevBlock.nodes().removeAt(prevBlock.nodes().size() - 1);
+        lastItemInPrevBlock = &prevBlock.nodes()[prevBlock.nodes().size() - 1];
+    }
+
+    int lastNodeIndexInPrevBlock = prevBlock.nodes().size() - 1;
+    int cursorPositionInLastNode = lastItemInPrevBlock->text().length();
+
+    Node &firstNode = currentBlock.nodes()[0];
+    if (Node::canBeInSameBlock(*lastItemInPrevBlock, firstNode))
+    {
+        for (int i = 0; i < currentBlock.nodes().size(); i++)
+        {
+            prevBlock.nodes().append(currentBlock.nodes()[i]);
+        }
+        prevBlock.arrangeNodes(m_availableWidth);
+        m_blocks.removeAt(blockIndex);
+    }
+
+    emit blocksChanged();
+    emit cursorPositionChanged(blockIndex - 1, lastNodeIndexInPrevBlock, cursorPositionInLastNode);
 }
 
 QVariant BlockLayoutEngine::getBlock(int blockIndex) const
