@@ -18,21 +18,11 @@ Rectangle {
 
     border.color: borderColor
     border.width: 1
-    width: Math.max(componentWidth, displayText.implicitWidth)
-    height: displayText.implicitHeight
+    width: Math.max(componentWidth, textInput.implicitWidth)
+    height: textInput.implicitHeight
 
-    Text {
-        id: displayText
-        font.weight: fontWeight
-        font.pixelSize: componentFontSize
-        color: textColor
-        text: componentText
-        wrapMode: Text.NoWrap
-        visible: true
-    }
-
-    TextArea {
-        id: textArea
+    TextInput {
+        id: textInput
         /* Make all padding 0 */
         leftPadding: 0
         rightPadding: 0
@@ -41,14 +31,11 @@ Rectangle {
 
         font.pixelSize: componentFontSize
         font.weight: fontWeight
-        color: "transparent"
+        color: textColor
         text: componentText
-        wrapMode: TextArea.NoWrap
-        background: null
         selectByMouse: true
 
         onTextChanged: {
-            displayText.text = text
             if (text !== componentText && blockIndex >= 0 && itemIndex >= 0) {
                 blockLayoutEngineCtx.textChanged(text, blockIndex, itemIndex, cursorPosition);
             }
@@ -75,13 +62,13 @@ Rectangle {
             target: blockLayoutEngineCtx
             function onCursorPositionChanged(changedBlockIndex, newNodeIndex, newCursorPos) {
                 /*
-                Because these nodes are replaced when a text is changed, we need to focus the text area again
+                Because these nodes are replaced when a text is changed, we need to focus the text input again
                 Plus when refreshed old components are removed but not immediately, so we need to make sure 
                 we don't update the ones that are about to be removed(thus use visible)
                 */
-                if (textArea && textArea.visible && changedBlockIndex === blockIndex && newNodeIndex === itemIndex) {
-                    textArea.forceActiveFocus();
-                    textArea.cursorPosition = newCursorPos;
+                if (textInput && textInput.visible && changedBlockIndex === blockIndex && newNodeIndex === itemIndex) {
+                    textInput.forceActiveFocus();
+                    textInput.cursorPosition = newCursorPos;
                 }
             }
         }

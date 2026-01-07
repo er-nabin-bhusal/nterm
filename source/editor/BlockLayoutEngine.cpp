@@ -101,7 +101,7 @@ void BlockLayoutEngine::moveCursorRight(int blockIndex, int itemIndex, int curso
     {
         if (blockIndex < m_blocks.size() - 1)
         {
-            emit cursorPositionChanged(blockIndex + 1, 0, 1);
+            emit cursorPositionChanged(blockIndex + 1, 0, 0);
         }
     }
     else
@@ -241,7 +241,11 @@ void BlockLayoutEngine::setAvailableWidth(qreal width)
         return;
 
     m_availableWidth = width;
-    emit availableWidthChanged();
+    for (Block &block : m_blocks)
+    {
+        block.arrangeNodes(m_availableWidth);
+    }
+    emit blocksChanged();
 }
 
 void BlockLayoutEngine::initializeSampleData()
