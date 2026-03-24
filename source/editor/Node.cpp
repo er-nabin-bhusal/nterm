@@ -1,5 +1,6 @@
 #include "source/editor/Node.h"
 #include <QFontMetrics>
+#include <cmath>
 
 Node::Node() : m_type(Normal), m_fontSize(16), m_fontWeight(QFont::Normal), m_width(0.0)
 {
@@ -117,4 +118,49 @@ qreal Node::measureTextWidth(const QString &text) const
 bool Node::canBeInSameBlock(const Node &node1, const Node &node2)
 {
     return node1.fontSize() == node2.fontSize();
+}
+
+int Node::getCursorPositionFromCoordinates(qreal x) const
+{
+    /* Binary search to find the character index that corresponds to the x coordinate */
+    const QString &text = m_text;
+    if (text.isEmpty())
+    {
+        return 0;
+    }
+
+    // Clamp x to valid range
+    qreal maxWidth = measureTextWidth(text);
+    if (x <= 0)
+    {
+        return 0;
+    }
+    if (x >= maxWidth)
+    {
+        return text.length();
+    }
+
+    int left = 0, right = text.length();
+    const qreal epsilon = 0.1; // Tolerance for floating point comparison
+
+    while (left < right)
+    {
+        int mid = (left + right + 1) / 2;
+        qreal width = measureTextWidth(text.left(mid));
+
+        // Use epsilon for floating point comparison
+        if (std::abs(width - x) < epsilon)
+        {
+            return mid;
+        }
+        else if (width < x)
+        {
+            left = mid;
+        }
+        else
+        {
+            right = mid - 1;
+        }
+    }
+    return left;
 }

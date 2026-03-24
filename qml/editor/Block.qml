@@ -4,6 +4,7 @@ Item {
     id: root
     property var blockData: null
     property int blockIndex: -1
+    property alias flowContent: flowContent
     width: parent.width
     height: Math.max(flowContent.height, 16)
     
@@ -16,6 +17,12 @@ Item {
             // This MouseArea is behind children, so it only receives clicks on empty space
             // Set cursor to last position in this block
             blockLayoutEngineCtx.setCursorToLastPositionInBlock(root.blockIndex)
+        }
+        onPressed: function(mouse) {
+            blockLayoutEngineCtx.setCursorPosition(root.blockIndex, root.itemIndex, root.cursorPosition);
+        }
+        onReleased: function(mouse) {
+            blockLayoutEngineCtx.setCursorPosition(root.blockIndex, root.itemIndex, root.cursorPosition);
         }
     }
     

@@ -34,13 +34,49 @@ Page {
             MouseArea {
                 id: editorMouseArea
                 anchors.fill: parent
-                z: -1
+                z: 100
                 acceptedButtons: Qt.LeftButton
-                onClicked: function(mouse) {
-                    // This MouseArea is behind blocks, so it only receives clicks on empty space
-                    // Set cursor to last position in last block
-                    blockLayoutEngineCtx.setCursorToLastPositionInLastBlock()
+                
+                function getBlockAndNodeIndexAtCoordinates(x, y) {
+                    var pointInBlocksContainer = editorMouseArea.mapToItem(blocksContainer, x, y);
+                    var clickedBlock = blocksContainer.childAt(pointInBlocksContainer.x, pointInBlocksContainer.y);
+                    
+                    if (!clickedBlock) {
+                        return {blockIndex: -1, nodeIndex: -1, x: -1};
+                    }
+                    
+                    var blockIndex = clickedBlock.blockIndex;
+                    var flowContent = clickedBlock.flowContent;
+                    var pointInFlowContent = editorMouseArea.mapToItem(flowContent, x, y);
+                    var clickedNode = flowContent.childAt(pointInFlowContent.x, pointInFlowContent.y);
+                    if (!clickedNode) {
+                        return {blockIndex: blockIndex, nodeIndex: -1, x: -1};
+                    }
+                    var pointInNode = editorMouseArea.mapToItem(clickedNode, x, y);
+                    return {blockIndex: blockIndex, nodeIndex: clickedNode.itemIndex, x: pointInNode.x };
                 }
+                
+                onPressed: function(mouse) {
+                    var pos = getBlockAndNodeIndexAtCoordinates(mouse.x, mouse.y);
+                    if (pos.blockIndex !== -1 && pos.nodeIndex !== -1 && pos.x !== -1) {
+                        blockLayoutEngineCtx.setSelectionStart(pos.blockIndex, pos.nodeIndex, pos.x);
+                        blockLayoutEngineCtx.toggleSelecting(true);
+                    }
+                }
+                onReleased: function(mouse) {
+                    var pos = getBlockAndNodeIndexAtCoordinates(mouse.x, mouse.y);
+                    if (pos.blockIndex !== -1 && pos.nodeIndex !== -1 && pos.x !== -1) {
+                        blockLayoutEngineCtx.setSelectionEnd(pos.blockIndex, pos.nodeIndex, pos.x);
+                        blockLayoutEngineCtx.toggleSelecting(false);
+                    }
+                }
+                onPositionChanged: function(mouse) {
+                    var pos = getBlockAndNodeIndexAtCoordinates(mouse.x, mouse.y);
+                    if (pos.blockIndex !== -1 && pos.nodeIndex !== -1 && pos.x !== -1) {
+                        blockLayoutEngineCtx.onPositionChanged(pos.blockIndex, pos.nodeIndex, pos.x);
+                    }
+                }
+                
             }
 
             Column {

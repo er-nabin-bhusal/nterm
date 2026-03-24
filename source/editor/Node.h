@@ -49,6 +49,7 @@ public:
     void setWidth(qreal width);
 
     qreal measureTextWidth(const QString &text) const;
+    int getCursorPositionFromCoordinates(qreal x) const;
 
 private:
     QFont m_font;

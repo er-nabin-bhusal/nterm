@@ -10,8 +10,8 @@ Rectangle {
     property int blockIndex: -1
     property int itemIndex: -1
     property int cursorPosition: -1
+    property alias textInput: textInput
     
-    // Style properties that can be customized
     property color borderColor: "#4caf50"
     property int fontWeight: Font.Normal
     property color textColor: "blue"
@@ -33,7 +33,7 @@ Rectangle {
         font.weight: fontWeight
         color: textColor
         text: componentText
-        selectByMouse: true
+        selectByMouse: false
 
         onTextChanged: {
             if (text !== componentText && blockIndex >= 0 && itemIndex >= 0) {
@@ -56,6 +56,14 @@ Rectangle {
                     blockLayoutEngineCtx.handleBackspaceKey(blockIndex, itemIndex, cursorPosition);
                 }
             }
+
+            if (event.modifiers & Qt.ControlModifier && event.key === Qt.Key_A) {
+                console.log("Keys.onPressed: event.key:", event.key);
+                event.accepted = true;
+                if (blockLayoutEngineCtx) {
+                    blockLayoutEngineCtx.selectAll();
+                }
+            }
         }
 
         Connections {
@@ -67,8 +75,20 @@ Rectangle {
                 we don't update the ones that are about to be removed(thus use visible)
                 */
                 if (textInput && textInput.visible && changedBlockIndex === blockIndex && newNodeIndex === itemIndex) {
+                    var selStart = textInput.selectionStart;
+                    var selEnd = textInput.selectionEnd;
                     textInput.forceActiveFocus();
                     textInput.cursorPosition = newCursorPos;
+                    if (selStart !== selEnd) {
+                        textInput.select(selStart, selEnd);
+                    }
+                }
+            }
+            function onSelectionChanged(block, item, start, end) {
+                if (textInput && textInput.visible) {
+                    if (block === blockIndex && item === itemIndex) {
+                        textInput.select(start, end);
+                    }
                 }
             }
         }

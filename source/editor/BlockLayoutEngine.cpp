@@ -3,8 +3,37 @@
 #include <Qt>
 
 BlockLayoutEngine::BlockLayoutEngine(QObject *parent)
-    : QObject(parent), m_availableWidth(0.0)
+    : QObject(parent), m_availableWidth(0.0), m_selectedTextRange(nullptr)
 {
+}
+
+BlockLayoutEngine::~BlockLayoutEngine()
+{
+    delete m_selectedTextRange;
+}
+
+bool BlockLayoutEngine::isSelected()
+{
+    if (m_selectedTextRange == nullptr)
+        return false;
+    if (m_selectedTextRange->start.blockIndex != m_selectedTextRange->end.blockIndex)
+        return false;
+    if (m_selectedTextRange->start.itemIndex != m_selectedTextRange->end.itemIndex)
+        return false;
+    if (m_selectedTextRange->start.cursorPosition != m_selectedTextRange->end.cursorPosition)
+        return false;
+    return true;
+}
+
+void BlockLayoutEngine::selectAll()
+{
+    for (int i = 0; i < m_blocks.size(); i++)
+    {
+        for (int j = 0; j < m_blocks[i].nodes().size(); j++)
+        {
+            emit selectionChanged(i, j, 0, m_blocks[i].nodes()[j].text().length());
+        }
+    }
 }
 
 void BlockLayoutEngine::textChanged(const QString &text, int blockIndex, int itemIndex, int cursorPosition)
@@ -19,6 +48,129 @@ void BlockLayoutEngine::textChanged(const QString &text, int blockIndex, int ite
     QPair<int, int> cursorPositionInBlockPair = block.getCursorPositionInBlock(cursorPositionInBlock);
     emit blockChanged(blockIndex);
     emit cursorPositionChanged(blockIndex, cursorPositionInBlockPair.first, cursorPositionInBlockPair.second);
+}
+
+void BlockLayoutEngine::toggleSelecting(bool isSelecting)
+{
+    m_isSelecting = isSelecting;
+}
+
+void BlockLayoutEngine::setSelectionStart(int blockIndex, int itemIndex, qreal x)
+{
+    Node &node = m_blocks[blockIndex].nodes()[itemIndex];
+    int cursorPosition = node.getCursorPositionFromCoordinates(x);
+    if (m_selectedTextRange)
+    {
+        m_selectedTextRange->start = {
+            .blockIndex = blockIndex,
+            .itemIndex = itemIndex,
+            .cursorPosition = cursorPosition};
+        m_selectedTextRange->end = {.blockIndex = blockIndex, .itemIndex = itemIndex, .cursorPosition = cursorPosition};
+    }
+    else
+    {
+        m_selectedTextRange = new SelectedTextRange{
+            .start = {
+                .blockIndex = blockIndex,
+                .itemIndex = itemIndex,
+                .cursorPosition = cursorPosition},
+            .end = {.blockIndex = blockIndex, .itemIndex = itemIndex, .cursorPosition = cursorPosition}};
+    }
+}
+
+void BlockLayoutEngine::setSelectionEnd(int blockIndex, int itemIndex, qreal x)
+{
+    Node &node = m_blocks[blockIndex].nodes()[itemIndex];
+    int cursorPosition = node.getCursorPositionFromCoordinates(x);
+
+    m_selectedTextRange->end = {
+        .blockIndex = blockIndex,
+        .itemIndex = itemIndex,
+        .cursorPosition = cursorPosition};
+    emit cursorPositionChanged(blockIndex, itemIndex, cursorPosition);
+}
+
+bool BlockLayoutEngine::compareCursorPositions(const CursorPosition &a, const CursorPosition &b)
+{
+    if (a.blockIndex != b.blockIndex)
+        return a.blockIndex < b.blockIndex;
+    if (a.itemIndex != b.itemIndex)
+        return a.itemIndex < b.itemIndex;
+    return a.cursorPosition < b.cursorPosition;
+}
+
+QPair<CursorPosition, CursorPosition> BlockLayoutEngine::normalizeSelectionRange() const
+{
+    CursorPosition start = m_selectedTextRange->start;
+    CursorPosition end = m_selectedTextRange->end;
+
+    if (!compareCursorPositions(start, end))
+    {
+        // Swap if end comes before start
+        CursorPosition temp = start;
+        start = end;
+        end = temp;
+    }
+
+    return QPair<CursorPosition, CursorPosition>(start, end);
+}
+
+void BlockLayoutEngine::emitSelectionForRange(const CursorPosition &start, const CursorPosition &end)
+{
+    for (int blockIdx = start.blockIndex; blockIdx <= end.blockIndex; blockIdx++)
+    {
+
+        const Block &block = m_blocks[blockIdx];
+        const QList<Node> &nodes = block.nodes();
+
+        int startNodeIdx = (blockIdx == start.blockIndex) ? start.itemIndex : 0;
+        int endNodeIdx = (blockIdx == end.blockIndex) ? end.itemIndex : (nodes.size() - 1);
+
+        for (int nodeIdx = startNodeIdx; nodeIdx <= endNodeIdx; nodeIdx++)
+        {
+
+            const Node &node = nodes[nodeIdx];
+            if (node.type() == Node::NewLine)
+                continue;
+
+            int nodeTextLength = node.text().length();
+
+            // Determine selection start and end within this node
+            int selectionStart = 0;
+            int selectionEnd = nodeTextLength;
+
+            if (blockIdx == start.blockIndex && nodeIdx == start.itemIndex)
+            {
+                // First node in selection
+                selectionStart = start.cursorPosition;
+            }
+
+            if (blockIdx == end.blockIndex && nodeIdx == end.itemIndex)
+            {
+                // Last node in selection
+                selectionEnd = end.cursorPosition;
+            }
+
+            // Emit selection event for this node
+            emit selectionChanged(blockIdx, nodeIdx, selectionStart, selectionEnd);
+        }
+    }
+}
+
+void BlockLayoutEngine::onPositionChanged(int blockIndex, int itemIndex, qreal x)
+{
+    Node &node = m_blocks[blockIndex].nodes()[itemIndex];
+    int cursorPosition = node.getCursorPositionFromCoordinates(x);
+    if (!m_isSelecting || m_selectedTextRange == nullptr)
+        return;
+
+    m_selectedTextRange->end = {
+        .blockIndex = blockIndex,
+        .itemIndex = itemIndex,
+        .cursorPosition = cursorPosition};
+
+    QPair<CursorPosition, CursorPosition> normalizedRange = normalizeSelectionRange();
+    emitSelectionForRange(normalizedRange.first, normalizedRange.second);
 }
 
 /**
